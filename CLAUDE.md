@@ -51,18 +51,17 @@ Each CSV row is one entity/article occurrence. Interface-relevant columns: `x`, 
 
 ## Interface architecture (`src/`)
 
-`src/index.js` is the entry point. It loads `entities.csv` + font + background, rescales `entity.x/y` into screen space, stores everything on a **global `window.s`** object (`s.entities`, `s.app`, `s.viewport`, shared colors, `s.bitmaps`), then calls each render module once.
+`src/index.js` is the entry point. It loads `entities.csv` + font + background, rescales `entity.x/y` into screen space, stores everything on a **global `window.s`** object (`s.entities`, `s.app`, `s.viewport`, shared colors), then calls each render module once.
 
 Rendering is a stack of PixiJS layers, each an independent module in `src/interface/` that adds a labelled `Container` stage to the shared `s.viewport`. **PixiJS 8 note:** a `Graphics` may no longer hold children, so stages that carry child bitmaps/graphics are `Container`s (with a separate `Graphics` child for any drawing — see `clusters.js`); a stage that only draws (`contours.js`) stays a `Graphics`.
 
 - `background.js` — background image sprite
 - `contours.js` — density isolines (`d3.contourDensity`)
-- `keywords.js` — keyword labels (inert with the current CSV — it filters `type === 'tag'`, which no row has)
 - `clusters.js` — cluster hulls + topic labels (`cluster_subject_x`), red/blue by mean temperature
 - `elements.js` — per-article crosses + year labels; **these are the clickable elements** (`eventMode`/`on('pointertap')`)
 - `fronts.js` — "weather front" boundaries between neighboring clusters
 
-**Zoom drives a crossfade** (`s.viewport.on('zoomed')` in `index.js`): zooming out fades in the distant-reading layers (`fronts`, `clusters`, `contours`, `keywords`); zooming in fades them out and reveals `elements`. Layers are located by their `.label` — if you add/rename a stage, update the zoom handler.
+**Zoom drives a crossfade** (`s.viewport.on('zoomed')` in `index.js`): zooming out fades in the distant-reading layers (`fronts`, `clusters`, `contours`); zooming in fades them out and reveals `elements`. Layers are located by their `.label` — if you add/rename a stage, update the zoom handler.
 
 `click.js` — clicking a year label renders the `#focus` detail panel (title, tags, link to svalbardposten.no); exported as a **named** `click` (not a default). The search feature (autocomplete title search that zoomed to a result) was **removed**; `@tarekraafat/autocomplete.js` is still in `package.json` for easy restoration (last full version at git `56c9e8b`).
 

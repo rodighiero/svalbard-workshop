@@ -16,7 +16,6 @@ import clusters from './interface/clusters.js'
 import contours from './interface/contours.js'
 import elements from './interface/elements.js'
 import fronts from './interface/fronts.js'
-import keywords from './interface/keywords.js'
 
 // Static assets live in public/ and are served verbatim (the Lato.fnt bitmap
 // font references Lato.png by a stable, unhashed name, so it must not be bundled)
@@ -74,7 +73,6 @@ Promise.all([
 
     window.s = {
         'entities': entities,
-        'bitmaps': [], // Collector of bitmaps for overlapping
         'blue': 0x385DA6,
         'red': 0xA6242F,
         'gray': 0x666666,
@@ -115,7 +113,7 @@ Promise.all([
 
     // Distant-reading layers fade in when zooming out; per-article elements fade
     // in when zooming in. Layers are located by their .label (see each module).
-    const fadeOut = ['fronts', 'clusters', 'contours', 'keywords']
+    const fadeOut = ['fronts', 'clusters', 'contours']
     const fadeIn = ['elements']
 
     s.viewport.on('zoomed', e => {
@@ -132,7 +130,6 @@ Promise.all([
 
     background(backgroundTexture)
     contours(entities)
-    keywords(entities)
     clusters(entities)
     elements(entities)
     fronts(entities)
@@ -149,23 +146,3 @@ Promise.all([
     }, { passive: false }) // Prevent wheel interference
 
 })
-
-// Canvas Export
-/*
-
-
-a = document.createElement("a");
-canvas = document.getElementsByTagName("canvas")[0]
-
-function saveCanvas() {
-  a.href = canvas.toDataURL();
-  a.download = "image.png";
-  a.click();
-  a.remove();
-  
-}
-
-setTimeout(saveCanvas, 100)
-
-
-*/
