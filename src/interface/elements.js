@@ -9,25 +9,24 @@ export default (entities) => {
     stage.label = 'elements'
     s.viewport.addChild(stage)
 
+    const length = 0.4      // original lenght = 1
+    const tickness = 0.1     // original thickness = 0.2
+
+    // All crosses are inert (only the year labels are clickable), so batch them
+    // into one Graphics rather than ~2 per article. Each stroke() commits the
+    // path built since the previous commit, keeping the per-article color.
+    const crosses = new Graphics()
+    stage.addChild(crosses)
+
     entities.forEach(e => {
 
         // Cross
 
-        const length = 0.4      // original lenght = 1
-        const tickness = 0.1     // original thickness = 0.2
         const color = Number(e.color)
 
-        const line_1 = new Graphics()
-        line_1.moveTo(e.x, e.y - length)
-        line_1.lineTo(e.x, e.y + length)
-        line_1.stroke({ width: tickness, color })
-        stage.addChild(line_1)
-
-        const line_2 = new Graphics()
-        line_2.moveTo(e.x - length, e.y)
-        line_2.lineTo(e.x + length, e.y)
-        line_2.stroke({ width: tickness, color })
-        stage.addChild(line_2)
+        crosses.moveTo(e.x, e.y - length).lineTo(e.x, e.y + length)
+        crosses.moveTo(e.x - length, e.y).lineTo(e.x + length, e.y)
+        crosses.stroke({ width: tickness, color })
 
         // Label
 
