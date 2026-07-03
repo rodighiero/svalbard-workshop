@@ -7,7 +7,6 @@ const LAYERS = [
     { label: 'fronts', name: 'Fronts' },
     { label: 'clusters', name: 'Clusters' },
     { label: 'contours', name: 'Contours' },
-    { label: 'background', name: 'Background' },
 ]
 
 export default () => {

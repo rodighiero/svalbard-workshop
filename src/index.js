@@ -9,7 +9,6 @@ import { Viewport } from 'pixi-viewport'
 
 // Modules
 
-import background from './interface/background.js'
 import clusters from './interface/clusters.js'
 import contours from './interface/contours.js'
 import controls from './interface/controls.js'
@@ -31,7 +30,6 @@ const app = new Application()
 Promise.all([
     csv(base + 'entities.csv'),
     Assets.load(base + 'Lato.fnt'), // Registers the 'Lato' bitmap font
-    Assets.load(base + 'background.png'), // Returns a Texture
     app.init({
         antialias: true,
         resolution: 2,
@@ -39,8 +37,9 @@ Promise.all([
         resizeTo: window,
         preserveDrawingBuffer: true,
     }),
-]).then(([entities, , backgroundTexture]) => {
-    // Lato.fnt result unused (loading registers the font)
+]).then(([entities]) => {
+    // Only the CSV result is used; Lato.fnt loads for its side effect (font
+    // registration) and app.init() returns nothing.
 
     // Set dimensions
 
@@ -111,7 +110,6 @@ Promise.all([
 
     // Rendering
 
-    background(backgroundTexture)
     contours(entities)
     clusters(entities)
     elements(entities)

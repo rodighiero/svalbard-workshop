@@ -41,7 +41,7 @@ Vite's `build.outDir` is **`docs/`** (see `vite.config.js`), and `docs/` is the 
 
 `base: './'` makes asset URLs relative so the build works from the Pages subpath (`/svalbard-workshop/`). The HTML entry is **`index.html` at the repo root** (with `<script type="module" src="/src/index.js">`), not in `src/`.
 
-`public/` holds the **runtime static assets** (`Lato.fnt`, `Lato.png`, `background.png`, `entities.csv`) — Vite copies them into `docs/` **verbatim, unhashed**. This matters: `Lato.fnt` references `Lato.png` by a fixed page name, so the font page image must not be bundled/hashed. `index.js` loads these from `import.meta.env.BASE_URL` (e.g. `Assets.load(base + 'Lato.fnt')`), which resolves correctly on the subpath.
+`public/` holds the **runtime static assets** (`Lato.fnt`, `Lato.png`, `entities.csv`) — Vite copies them into `docs/` **verbatim, unhashed**. This matters: `Lato.fnt` references `Lato.png` by a fixed page name, so the font page image must not be bundled/hashed. `index.js` loads these from `import.meta.env.BASE_URL` (e.g. `Assets.load(base + 'Lato.fnt')`), which resolves correctly on the subpath.
 
 ## Data boundary
 
@@ -51,11 +51,10 @@ Each CSV row is one entity/article occurrence. Interface-relevant columns: `x`, 
 
 ## Interface architecture (`src/`)
 
-`src/index.js` is the entry point. It loads `entities.csv` + font + background, rescales `entity.x/y` into screen space, stores everything on a **global `window.s`** object (`s.entities`, `s.app`, `s.viewport`, shared colors), then calls each render module once.
+`src/index.js` is the entry point. It loads `entities.csv` + font, rescales `entity.x/y` into screen space, stores everything on a **global `window.s`** object (`s.entities`, `s.app`, `s.viewport`, shared colors), then calls each render module once.
 
 Rendering is a stack of PixiJS layers, each an independent module in `src/interface/` that adds a labelled `Container` stage to the shared `s.viewport`. **PixiJS 8 note:** a `Graphics` may no longer hold children, so stages that carry child bitmaps/graphics are `Container`s (with a separate `Graphics` child for any drawing — see `clusters.js`); a stage that only draws (`contours.js`) stays a `Graphics`.
 
-- `background.js` — background image sprite
 - `contours.js` — density isolines (`d3.contourDensity`)
 - `clusters.js` — cluster hulls + topic labels (`cluster_subject_x`), red/blue by mean temperature
 - `elements.js` — per-article crosses + year labels; **these are the clickable elements** (`eventMode`/`on('pointertap')`)
