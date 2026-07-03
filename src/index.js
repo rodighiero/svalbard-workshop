@@ -108,29 +108,6 @@ Promise.all([
 
     s.app.stage.addChild(s.viewport)
 
-    // Transparency on zoom
-
-    let scale
-    const zoomOut = scaleLinear().domain([6, 1]).range([0, 1]) // Visible when zooming out
-    const zoomIn = scaleLinear().domain([6, 1]).range([1, 0]) // Visible when zooming in
-
-    // Distant-reading layers fade in when zooming out; per-article elements fade
-    // in when zooming in. Layers are located by their .label (see each module).
-    const fadeOut = ['fronts', 'clusters', 'contours']
-    const fadeIn = ['elements']
-
-    s.viewport.on('zoomed', (e) => {
-        try {
-            scale = e.viewport.lastViewport.scaleX
-        } catch {
-            scale = 1
-        }
-
-        const stage = (label) => e.viewport.children.find((child) => child.label == label)
-        fadeOut.forEach((label) => (stage(label).alpha = zoomOut(scale)))
-        fadeIn.forEach((label) => (stage(label).alpha = zoomIn(scale)))
-    })
-
     // Rendering
 
     background(backgroundTexture)

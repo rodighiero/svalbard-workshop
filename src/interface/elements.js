@@ -4,7 +4,6 @@ import { click } from './click'
 
 export default (entities) => {
     const stage = new Container()
-    stage.alpha = 0
     stage.label = 'elements'
     s.viewport.addChild(stage)
 
