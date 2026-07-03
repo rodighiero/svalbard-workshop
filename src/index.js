@@ -1,6 +1,6 @@
 // CSS
 
-import '../node_modules/css-reset-and-normalize/css/reset-and-normalize.min.css'
+import 'css-reset-and-normalize/css/reset-and-normalize.min.css'
 import './assets/main.css'
 
 // Libraries
@@ -9,28 +9,26 @@ import { csv, extent, min, scaleLinear } from 'd3'
 import { Application, Assets } from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 
-// Assets
+// Modules
 
 import background from './interface/background.js'
 import clusters from './interface/clusters.js'
-import click from './interface/click.js'
 import contours from './interface/contours.js'
 import elements from './interface/elements.js'
 import fronts from './interface/fronts.js'
 import keywords from './interface/keywords.js'
 
-import fontURL from './assets/Lato.fnt'
-import './assets/Lato.png' // Emit the bitmap-font page image referenced by Lato.fnt
-import backgroundURL from './assets/background.png'
+// Static assets live in public/ and are served verbatim (the Lato.fnt bitmap
+// font references Lato.png by a stable, unhashed name, so it must not be bundled)
 
-import entitiesURL from './data/entities.csv'
+const base = import.meta.env.BASE_URL
 
 // Load
 
 Promise.all([
-    csv(entitiesURL),
-    Assets.load(fontURL),        // Registers the 'Lato' bitmap font
-    Assets.load(backgroundURL),  // Returns a Texture
+    csv(base + 'entities.csv'),
+    Assets.load(base + 'Lato.fnt'),        // Registers the 'Lato' bitmap font
+    Assets.load(base + 'background.png'),  // Returns a Texture
 
 ]).then(async ([entities, fontLato, backgroundTexture]) => {
 
