@@ -173,6 +173,10 @@ p {
 	transform: translateX(14px);
 }
 
+.switch.sub {
+	margin-left: 20px;
+}
+
 .switch-label {
 	font-size: 60%;
 }

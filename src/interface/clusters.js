@@ -18,12 +18,21 @@ export default (entities) => {
     stage.alpha = 1
     s.viewport.addChild(stage)
 
-    // Graphics child holds the polygon drawing; the Container holds the labels
-    const graphics = new Graphics()
-    stage.addChild(graphics)
+    // Split clusters into red (emerging, temperature > 0) and blue (receding)
+    // subgroups so each can be toggled independently. Each subgroup is a
+    // labelled Container holding its own hull Graphics plus its labels.
+    const groups = { red: new Container(), blue: new Container() }
+    groups.red.label = 'clusters-red'
+    groups.blue.label = 'clusters-blue'
+    const graphics = { red: new Graphics(), blue: new Graphics() }
+    groups.red.addChild(graphics.red)
+    groups.blue.addChild(graphics.blue)
+    stage.addChild(groups.red, groups.blue)
 
     group(entities, (e) => e.cluster).forEach((cluster) => {
         const temperature = mean(cluster.map((e) => e.temperature))
+        const key = temperature > 0 ? 'red' : 'blue'
+        const g = graphics[key]
         const coordinates = cluster.map((e) => [e.x, e.y])
         const polygon = polygonHull(coordinates)
         const center = polygonCentroid(polygon)
@@ -58,19 +67,19 @@ export default (entities) => {
             ]
 
             if (i === 0) {
-                graphics.moveTo(controlPoint[0], controlPoint[1]) // Start at the midpoint of the last segment
+                g.moveTo(controlPoint[0], controlPoint[1]) // Start at the midpoint of the last segment
             }
 
             const midPoint = [
                 (currentPoint[0] + nextPoint[0]) / 2,
                 (currentPoint[1] + nextPoint[1]) / 2,
             ]
-            graphics.quadraticCurveTo(currentPoint[0], currentPoint[1], midPoint[0], midPoint[1]) // Smooth curve
+            g.quadraticCurveTo(currentPoint[0], currentPoint[1], midPoint[0], midPoint[1]) // Smooth curve
         }
 
-        graphics.closePath() // Close the path
-        graphics.fill({ color, alpha: 0.2 }) // Fill with transparency
-        graphics.stroke({ width: 0.4, color, alpha: 0.2 }) // Contour
+        g.closePath() // Close the path
+        g.fill({ color, alpha: 0.2 }) // Fill with transparency
+        g.stroke({ width: 0.4, color, alpha: 0.2 }) // Contour
 
         // Text
 
@@ -86,6 +95,6 @@ export default (entities) => {
 
         bitmap.position.set(center[0] - bitmap.width / 2, center[1] - bitmap.height / 2)
 
-        stage.addChild(bitmap)
+        groups[key].addChild(bitmap)
     })
 }
