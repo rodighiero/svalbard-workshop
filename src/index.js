@@ -1,7 +1,5 @@
-// CSS
-
-import 'css-reset-and-normalize/css/reset-and-normalize.min.css'
-import './assets/main.css'
+// CSS is linked render-blocking in index.html (see main.css) so the overlay
+// headings never flash at default sizes before styling loads.
 
 // Libraries
 
