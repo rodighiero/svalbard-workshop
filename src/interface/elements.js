@@ -3,14 +3,13 @@ import { BitmapText, Container, Graphics, Rectangle } from 'pixi.js'
 import { click } from './click'
 
 export default (entities) => {
-
     const stage = new Container()
     stage.alpha = 0
     stage.label = 'elements'
     s.viewport.addChild(stage)
 
-    const length = 0.4      // original lenght = 1
-    const tickness = 0.1     // original thickness = 0.2
+    const length = 0.4 // original lenght = 1
+    const tickness = 0.1 // original thickness = 0.2
 
     // All crosses are inert (only the year labels are clickable), so batch them
     // into one Graphics rather than ~2 per article. Each stroke() commits the
@@ -18,8 +17,7 @@ export default (entities) => {
     const crosses = new Graphics()
     stage.addChild(crosses)
 
-    entities.forEach(e => {
-
+    entities.forEach((e) => {
         // Cross
 
         const color = Number(e.color)
@@ -39,9 +37,8 @@ export default (entities) => {
             },
         })
         bitmap.tint = color
-        bitmap.position.set(e.x + .3, e.y + 0.1)  //(e.x + .6, e.y + 0.2)
+        bitmap.position.set(e.x + 0.3, e.y + 0.1) //(e.x + .6, e.y + 0.2)
         stage.addChild(bitmap)
-
 
         // Interaction
 
@@ -49,10 +46,8 @@ export default (entities) => {
         bitmap.eventMode = 'static'
         bitmap.cursor = 'pointer'
 
-        bitmap.on('pointertap', () => { click(e) }) // On click
-
-
-
+        bitmap.on('pointertap', () => {
+            click(e)
+        }) // On click
     })
-
 }

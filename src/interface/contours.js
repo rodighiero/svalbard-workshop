@@ -1,13 +1,12 @@
 import { Graphics } from 'pixi.js'
-import { contourDensity, extent } from 'd3'
+import { contourDensity } from 'd3'
 
-const width = .5
+const width = 0.5
 const cellSize = 1
 const bandwidth = 30 // Extension
 const thresholds = 15
 
-export default entities => {
-
+export default (entities) => {
     const stage = new Graphics()
     stage.interactiveChildren = false
     stage.label = 'contours'
@@ -15,17 +14,16 @@ export default entities => {
     s.viewport.addChild(stage)
 
     const density = contourDensity()
-        .x(e => e.x)
-        .y(e => e.y)
-        .weight(e => 10) // 2 is the normalization of the values
+        .x((e) => e.x)
+        .y((e) => e.y)
+        .weight(() => 10) // constant weight for every point
         .size([window.innerWidth, window.innerHeight])
         .cellSize(cellSize)
         .bandwidth(bandwidth)
-        .thresholds(thresholds)
-        (entities)
+        .thresholds(thresholds)(entities)
 
-    density.forEach(layer => {
-        layer.coordinates.forEach(array => {
+    density.forEach((layer) => {
+        layer.coordinates.forEach((array) => {
             array[0].forEach(([x, y], i) => {
                 if (i == 0) stage.moveTo(x, y)
                 stage.lineTo(x, y)
@@ -34,5 +32,4 @@ export default entities => {
     })
 
     stage.stroke({ width, color: s.contours })
-
 }

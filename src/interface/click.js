@@ -2,13 +2,10 @@ import { select } from 'd3'
 
 const line = '—————————————'
 
-
 export function click(e) {
-
     select('#focus').remove() // Delete previous focus
 
     const focus = select('body').append('div').attr('id', 'focus')
-
 
     // Heading
 
@@ -17,6 +14,9 @@ export function click(e) {
     focus.append('p').html(line)
     focus.append('h1').html(e.title)
     focus.append('h2').html(e.subtitle)
-    focus.append('h2').html(`<a href=https://www.svalbardposten.no${e.published_url} target="_blank">Reference Link</a>`)
-
+    focus
+        .append('h2')
+        .html(
+            `<a href=https://www.svalbardposten.no${e.published_url} target="_blank">Reference Link</a>`,
+        )
 }

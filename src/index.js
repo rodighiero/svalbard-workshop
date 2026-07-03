@@ -29,8 +29,8 @@ const app = new Application()
 
 Promise.all([
     csv(base + 'entities.csv'),
-    Assets.load(base + 'Lato.fnt'),        // Registers the 'Lato' bitmap font
-    Assets.load(base + 'background.png'),  // Returns a Texture
+    Assets.load(base + 'Lato.fnt'), // Registers the 'Lato' bitmap font
+    Assets.load(base + 'background.png'), // Returns a Texture
     app.init({
         antialias: true,
         resolution: 2,
@@ -38,42 +38,45 @@ Promise.all([
         resizeTo: window,
         preserveDrawingBuffer: true,
     }),
-
-]).then(([entities, fontLato, backgroundTexture]) => {
-
+]).then(([entities, , backgroundTexture]) => {
+    // Lato.fnt result unused (loading registers the font)
 
     // Set dimensions
 
-    const ext_X = extent(entities, e => parseInt(e.x))
-    const ext_Y = extent(entities, e => parseInt(e.y))
+    const ext_X = extent(entities, (e) => parseInt(e.x))
+    const ext_Y = extent(entities, (e) => parseInt(e.y))
     const margin = 150
     const smallerDimension = min([window.innerWidth, window.innerHeight])
 
-    const scale_X = scaleLinear().domain(ext_X).range([margin, smallerDimension - margin])
-    const scale_Y = scaleLinear().domain(ext_Y).range([margin, smallerDimension - margin])
+    const scale_X = scaleLinear()
+        .domain(ext_X)
+        .range([margin, smallerDimension - margin])
+    const scale_Y = scaleLinear()
+        .domain(ext_Y)
+        .range([margin, smallerDimension - margin])
 
-    const marginTop = window.innerWidth > window.innerHeight ? 0 : (window.innerHeight - window.innerWidth) / 2
-    const marginLeft = window.innerWidth < window.innerHeight ? 0 : (window.innerWidth - window.innerHeight) / 2
-
+    const marginTop =
+        window.innerWidth > window.innerHeight ? 0 : (window.innerHeight - window.innerWidth) / 2
+    const marginLeft =
+        window.innerWidth < window.innerHeight ? 0 : (window.innerWidth - window.innerHeight) / 2
 
     // Parsing
 
-    entities.map(e => {
+    entities.map((e) => {
         e.x = marginLeft + parseInt(scale_X(e.x))
         e.y = marginTop + parseInt(scale_Y(e.y))
         e.color = '0x' + e.color.substring(1)
         return e
     })
 
-
     // Set variables
 
     window.s = {
-        'entities': entities,
-        'blue': 0x385DA6,
-        'red': 0xA6242F,
-        'gray': 0x666666,
-        'contours': 0xCCCCCC,
+        entities: entities,
+        blue: 0x385da6,
+        red: 0xa6242f,
+        gray: 0x666666,
+        contours: 0xcccccc,
     }
 
     // App is already initialized (see Promise.all above)
@@ -82,7 +85,6 @@ Promise.all([
 
     document.body.prepend(s.app.canvas)
 
-
     // Set viewport
 
     s.viewport = new Viewport({
@@ -90,17 +92,21 @@ Promise.all([
         screenHeight: window.innerHeight,
         worldWidth: window.innerWidth,
         worldHeight: window.innerHeight,
-        events: s.app.renderer.events
-    }).drag().pinch().wheel().decelerate()
+        events: s.app.renderer.events,
+    })
+        .drag()
+        .pinch()
+        .wheel()
+        .decelerate()
         .clampZoom({
-            minWidth: 50, minHeight: 50,
+            minWidth: 50,
+            minHeight: 50,
             maxWidth: window.innerWidth,
-            maxHeight: window.innerHeight
+            maxHeight: window.innerHeight,
         })
         .clamp({ direction: 'all' })
 
     s.app.stage.addChild(s.viewport)
-
 
     // Transparency on zoom
 
@@ -113,15 +119,17 @@ Promise.all([
     const fadeOut = ['fronts', 'clusters', 'contours']
     const fadeIn = ['elements']
 
-    s.viewport.on('zoomed', e => {
+    s.viewport.on('zoomed', (e) => {
+        try {
+            scale = e.viewport.lastViewport.scaleX
+        } catch {
+            scale = 1
+        }
 
-        try { scale = e.viewport.lastViewport.scaleX } catch { scale = 1 }
-
-        const stage = label => e.viewport.children.find(child => child.label == label)
-        fadeOut.forEach(label => stage(label).alpha = zoomOut(scale))
-        fadeIn.forEach(label => stage(label).alpha = zoomIn(scale))
+        const stage = (label) => e.viewport.children.find((child) => child.label == label)
+        fadeOut.forEach((label) => (stage(label).alpha = zoomOut(scale)))
+        fadeIn.forEach((label) => (stage(label).alpha = zoomIn(scale)))
     })
-
 
     // Rendering
 
@@ -136,15 +144,17 @@ Promise.all([
     s.app.render()
     document.getElementById('loading')?.remove()
 
-
     // Viewport exceptions
 
     window.onresize = () => {
         s.viewport.resize()
     } // Prevent pinch gesture in Chrome
 
-    window.addEventListener('wheel', e => {
-        e.preventDefault()
-    }, { passive: false }) // Prevent wheel interference
-
+    window.addEventListener(
+        'wheel',
+        (e) => {
+            e.preventDefault()
+        },
+        { passive: false },
+    ) // Prevent wheel interference
 })
