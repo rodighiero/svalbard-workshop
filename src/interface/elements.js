@@ -1,10 +1,10 @@
-import { BitmapText, Graphics, Rectangle } from 'pixi.js'
+import { BitmapText, Container, Graphics, Rectangle } from 'pixi.js'
 
 import { click } from './click'
 
 export default (entities) => {
 
-    const stage = new Graphics()
+    const stage = new Container()
     stage.alpha = 0
     stage.label = 'elements'
     s.viewport.addChild(stage)

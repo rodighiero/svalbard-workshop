@@ -4,7 +4,7 @@ import { polygonHull, polygonCentroid, polygonContains, group, mean } from 'd3'
 export default entities => {
 
 
-    const stage = new Graphics()
+    const stage = new Container()
     stage.alpha = 1
     stage.interactiveChildren = false
     stage.label = 'fronts'

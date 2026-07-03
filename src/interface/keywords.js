@@ -1,9 +1,9 @@
-import { BitmapText, Graphics } from 'pixi.js'
+import { BitmapText, Container, Graphics } from 'pixi.js'
 import { group, mean, polygonCentroid, polygonHull } from 'd3'
 
 export default entities => {
 
-    const stage = new Graphics()
+    const stage = new Container()
     stage.label = 'keywords'
     stage.alpha = 1
     stage.interactiveChildren = false

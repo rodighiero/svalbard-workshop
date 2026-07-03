@@ -1,4 +1,4 @@
-import { BitmapText, Graphics } from 'pixi.js'
+import { BitmapText, Container, Graphics } from 'pixi.js'
 import { group, mean, polygonHull, polygonCentroid } from 'd3'
 import { average, rgb, formatHex } from 'culori'
 
@@ -18,11 +18,15 @@ const thresholds = 10
 
 export default entities => {
 
-    const stage = new Graphics()
+    const stage = new Container()
     stage.interactiveChildren = false
     stage.label = 'clusters'
     stage.alpha = 1
     s.viewport.addChild(stage)
+
+    // Graphics child holds the polygon drawing; the Container holds the labels
+    const graphics = new Graphics()
+    stage.addChild(graphics)
 
     group(entities, e => e.cluster)
         .forEach(cluster => {
@@ -61,19 +65,19 @@ export default entities => {
                 ];
 
                 if (i === 0) {
-                    stage.moveTo(controlPoint[0], controlPoint[1]); // Start at the midpoint of the last segment
+                    graphics.moveTo(controlPoint[0], controlPoint[1]); // Start at the midpoint of the last segment
                 }
 
                 const midPoint = [
                     (currentPoint[0] + nextPoint[0]) / 2,
                     (currentPoint[1] + nextPoint[1]) / 2,
                 ];
-                stage.quadraticCurveTo(currentPoint[0], currentPoint[1], midPoint[0], midPoint[1]); // Smooth curve
+                graphics.quadraticCurveTo(currentPoint[0], currentPoint[1], midPoint[0], midPoint[1]); // Smooth curve
             }
 
-            stage.closePath(); // Close the path
-            stage.fill({ color, alpha: 0.2 }); // Fill with transparency
-            stage.stroke({ width: 0.4, color, alpha: 0.2 }); // Contour
+            graphics.closePath(); // Close the path
+            graphics.fill({ color, alpha: 0.2 }); // Fill with transparency
+            graphics.stroke({ width: 0.4, color, alpha: 0.2 }); // Contour
 
 
 
