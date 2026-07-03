@@ -63,6 +63,6 @@ Rendering is a stack of PixiJS layers, each an independent module in `src/interf
 
 **Zoom drives a crossfade** (`s.viewport.on('zoomed')` in `index.js`): zooming out fades in the distant-reading layers (`fronts`, `clusters`, `contours`); zooming in fades them out and reveals `elements`. Layers are located by their `.label` — if you add/rename a stage, update the zoom handler.
 
-`click.js` — clicking a year label renders the `#focus` detail panel (title, tags, link to svalbardposten.no); exported as a **named** `click` (not a default). The search feature (autocomplete title search that zoomed to a result) was **removed**; `@tarekraafat/autocomplete.js` is still in `package.json` for easy restoration (last full version at git `56c9e8b`).
+`click.js` — clicking a year label renders the `#focus` detail panel (title, tags, link to svalbardposten.no); exported as a **named** `click` (not a default). The search feature (autocomplete title search that zoomed to a result) was **removed**, along with its `@tarekraafat/autocomplete.js` dependency; restore both from git if needed (last full version at `56c9e8b`).
 
 When editing render modules, note the coordinate units are the rescaled map space (fractional line widths/font sizes like `0.4`, `0.7` are intentional, not typos). Some modules still carry commented-out blocks from the upstream Weather Map (e.g. the front lines in `fronts.js`) that depend on columns not present in this CSV (`slope`, `frequency_norm`, `type`, `name`).

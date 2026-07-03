@@ -35,8 +35,7 @@ Promise.all([
     Assets.load(base + 'background.png'),  // Returns a Texture
     app.init({
         antialias: true,
-        resolution: 2, // Interface
-        // resolution: 8, // Canvas export
+        resolution: 2,
         autoDensity: true,
         resizeTo: window,
         preserveDrawingBuffer: true,

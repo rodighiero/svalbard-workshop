@@ -17,7 +17,6 @@ export function click(e) {
     focus.append('p').html(line)
     focus.append('h1').html(e.title)
     focus.append('h2').html(e.subtitle)
-    // focus.append('p').html(line)
     focus.append('h2').html(`<a href=https://www.svalbardposten.no${e.published_url} target="_blank">Reference Link</a>`)
 
 }
