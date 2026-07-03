@@ -33,10 +33,10 @@ a {
 }
 
 /******************************************************************************
-	 * Containers		
+	 * Containers
 ******************************************************************************/
 
-#focus, #title, #legenda, #award {
+#focus, #title, #legenda {
 	background-color: rgba(255, 255, 255, .8);
 	position: fixed;
 	border: none;
@@ -47,10 +47,6 @@ a {
 	left: 0;
 	top: 10;
 	width: 200px;
-	/* float: left;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis; */
 }
 
 #focus p {
@@ -63,36 +59,12 @@ a {
 #title {
 	right: 0;
 	bottom: 10;
-	/* width: 240px; */
 }
 
 #legenda {
 	right: 0;
 	bottom: 0;
 	text-align: right;
-}
-
-input {
-	font-size: 100%;
-	margin: 5px 0;
-	font-weight: normal;
-	background-color: #333;
-	border: 0;
-	color: #999;
-}
-
-input, input:before, input:after {
-	-webkit-user-select: initial;
-	-khtml-user-select: initial;
-	-moz-user-select: initial;
-	-ms-user-select: initial;
-	user-select: initial;
-}
-
-li {
-	font-size: 70%;
-	margin: 5px 0;
-	font-weight: normal;
 }
 
 h1 {
@@ -116,20 +88,6 @@ p {
 	font-size: 45%;
 	margin: 5px 0;
 	line-height: 1;
-}
-
-.block {
-	background-color: black;
-	height: 4px;
-	width: 1px;
-	display: inline-block;
-}
-
-.inverted {
-	background-color: black;
-	color: white;
-	white-space: nowrap;
-	padding: 2px 2px;
 }
 
 .red {
