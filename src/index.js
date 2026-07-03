@@ -23,14 +23,27 @@ import keywords from './interface/keywords.js'
 
 const base = import.meta.env.BASE_URL
 
+// Set app — init runs concurrently with the asset loads below (it needs none
+// of that data), overlapping renderer creation with network/decode latency.
+
+const app = new Application()
+
 // Load
 
 Promise.all([
     csv(base + 'entities.csv'),
     Assets.load(base + 'Lato.fnt'),        // Registers the 'Lato' bitmap font
     Assets.load(base + 'background.png'),  // Returns a Texture
+    app.init({
+        antialias: true,
+        resolution: 2, // Interface
+        // resolution: 8, // Canvas export
+        autoDensity: true,
+        resizeTo: window,
+        preserveDrawingBuffer: true,
+    }),
 
-]).then(async ([entities, fontLato, backgroundTexture]) => {
+]).then(([entities, fontLato, backgroundTexture]) => {
 
 
     // Set dimensions
@@ -68,17 +81,9 @@ Promise.all([
         'contours': 0xCCCCCC,
     }
 
-    // Set app
+    // App is already initialized (see Promise.all above)
 
-    s.app = new Application()
-    await s.app.init({
-        antialias: true,
-        resolution: 2, // Interface
-        // resolution: 8, // Canvas export
-        autoDensity: true,
-        resizeTo: window,
-        preserveDrawingBuffer: true,
-    })
+    s.app = app
 
     document.body.prepend(s.app.canvas)
 
@@ -108,16 +113,18 @@ Promise.all([
     const zoomOut = scaleLinear().domain([6, 1]).range([0, 1]) // Visible when zooming out
     const zoomIn = scaleLinear().domain([6, 1]).range([1, 0]) // Visible when zooming in
 
+    // Distant-reading layers fade in when zooming out; per-article elements fade
+    // in when zooming in. Layers are located by their .label (see each module).
+    const fadeOut = ['fronts', 'clusters', 'contours', 'keywords']
+    const fadeIn = ['elements']
+
     s.viewport.on('zoomed', e => {
 
         try { scale = e.viewport.lastViewport.scaleX } catch { scale = 1 }
 
-        e.viewport.children.find(child => child.label == 'fronts').alpha = zoomOut(scale)
-        e.viewport.children.find(child => child.label == 'clusters').alpha = zoomOut(scale)
-        e.viewport.children.find(child => child.label == 'contours').alpha = zoomOut(scale)
-        e.viewport.children.find(child => child.label == 'keywords').alpha = zoomOut(scale)
-
-        e.viewport.children.find(child => child.label == 'elements').alpha = zoomIn(scale)
+        const stage = label => e.viewport.children.find(child => child.label == label)
+        fadeOut.forEach(label => stage(label).alpha = zoomOut(scale))
+        fadeIn.forEach(label => stage(label).alpha = zoomIn(scale))
     })
 
 
