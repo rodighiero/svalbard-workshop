@@ -131,6 +131,11 @@ Promise.all([
     elements(entities)
     fronts(entities)
 
+    // Draw the first frame, then drop the loading cover so the map is already
+    // visible the moment it's revealed (no flash of empty canvas).
+    s.app.render()
+    document.getElementById('loading')?.remove()
+
 
     // Viewport exceptions
 
