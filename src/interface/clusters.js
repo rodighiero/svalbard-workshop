@@ -63,10 +63,15 @@ export default (entities) => {
         // Expanded polygon
         const expandedPolygon = expandPolygon(polygon, center, 10) // Adjust the factor to control expansion
 
-        // Smooth, rounded blob through the expanded hull, drawn onto the group's
-        // Graphics via d3's Catmull-Rom spline (see `blob` above).
+        // Smooth blob through the edge MIDPOINTS of the expanded hull (as the
+        // original corner-rounding did), so the footprint matches the pre-spline
+        // size — running the spline through the vertices bulges it outward.
+        const midpoints = expandedPolygon.map((p, i) => {
+            const q = expandedPolygon[(i + 1) % expandedPolygon.length]
+            return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]
+        })
         blob.context(g)
-        blob(expandedPolygon)
+        blob(midpoints)
         g.fill({ color, alpha: 0.2 }) // Fill with transparency
         g.stroke({ width: 0.4, color, alpha: 0.2 }) // Contour
 

@@ -181,3 +181,19 @@ p {
 .switch-label {
 	font-size: 60%;
 }
+
+#controls button {
+	margin-top: 8px;
+	padding: 3px 8px;
+	font-family: inherit;
+	font-size: 60%;
+	color: #000000;
+	background-color: #ffffff;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+#controls button:hover {
+	background-color: #f0f0f0;
+}

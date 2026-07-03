@@ -1,7 +1,8 @@
 // Layer switches — a small panel of toggles that show/hide each viewport
 // layer by flipping its `.visible`. Call after all layers are rendered so
 // they can be located by their `.label`. Some layers expose nested
-// sub-switches (e.g. the red/blue cluster subgroups).
+// sub-switches (e.g. the red/blue cluster subgroups). The panel also holds a
+// "Reset view" button that animates the camera back to its initial framing.
 
 const LAYERS = [
     { label: 'elements', name: 'Articles' },
@@ -94,6 +95,19 @@ export default () => {
 
         if (atLeastOneChild && group.length > 1) keepOneActive(group)
     })
+
+    // Snapshot the initial camera now (before any user interaction) and jump
+    // back to it when the button is clicked. Reset directly (not via the
+    // animate plugin) since this app renders on demand rather than per-frame.
+    const home = { scale: s.viewport.scale.x, x: s.viewport.center.x, y: s.viewport.center.y }
+    const reset = document.createElement('button')
+    reset.textContent = 'Reset view'
+    reset.addEventListener('click', () => {
+        s.viewport.setZoom(home.scale, true)
+        s.viewport.moveCenter(home.x, home.y)
+        s.app.render()
+    })
+    panel.appendChild(reset)
 
     document.body.appendChild(panel)
 }
