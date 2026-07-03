@@ -90,6 +90,7 @@ a {
 	color: #999999;
 	font-size: 90%;
 	z-index: 10;
+	transition: opacity 0.6s ease;
 }
 
 h1 {

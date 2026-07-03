@@ -119,10 +119,16 @@ Promise.all([
     // Layer show/hide switches (reads the rendered layers by their .label)
     controls()
 
-    // Draw the first frame, then drop the loading cover so the map is already
-    // visible the moment it's revealed (no flash of empty canvas).
+    // Draw the first frame, then fade the loading cover out to reveal the map
+    // (the map is already painted underneath, so it's a clean crossfade). The
+    // canvas stays fully visible throughout, so a slow timer can never leave
+    // the map hidden — worst case the cover lingers a moment longer.
     s.app.render()
-    document.getElementById('loading')?.remove()
+    const loading = document.getElementById('loading')
+    if (loading) {
+        loading.style.opacity = '0'
+        setTimeout(() => loading.remove(), 700)
+    }
 
     // Viewport exceptions
 
