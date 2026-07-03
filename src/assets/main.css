@@ -38,17 +38,23 @@ a {
 	 * Containers
 ******************************************************************************/
 
-#focus, #title, #legenda {
+#focus, #title, #legenda, #controls {
 	background-color: rgba(255, 255, 255, .8);
 	position: fixed;
 	border: none;
 	padding: 10px;
 }
 
+/* Detail panel sits bottom-left so it clears the layer switches (top-left) */
 #focus {
 	left: 0;
-	top: 10;
+	bottom: 0;
 	width: 200px;
+}
+
+#controls {
+	left: 0;
+	top: 0;
 }
 
 #focus p {
@@ -119,4 +125,54 @@ p {
 
 .gray {
 	color: #999999;
+}
+
+/******************************************************************************
+	 * Layer switches
+******************************************************************************/
+
+.switch {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 4px 0;
+	cursor: pointer;
+}
+
+.switch input {
+	display: none;
+}
+
+.switch .slider {
+	position: relative;
+	flex: none;
+	width: 26px;
+	height: 12px;
+	background-color: #cccccc;
+	border-radius: 12px;
+	transition: background-color .2s;
+}
+
+.switch .slider::before {
+	content: '';
+	position: absolute;
+	left: 2px;
+	top: 2px;
+	width: 8px;
+	height: 8px;
+	background-color: #ffffff;
+	border-radius: 50%;
+	transition: transform .2s;
+}
+
+.switch input:checked + .slider {
+	background-color: #385DA6;
+}
+
+.switch input:checked + .slider::before {
+	transform: translateX(14px);
+}
+
+.switch-label {
+	font-size: 60%;
 }

@@ -12,6 +12,7 @@ import { Viewport } from 'pixi-viewport'
 import background from './interface/background.js'
 import clusters from './interface/clusters.js'
 import contours from './interface/contours.js'
+import controls from './interface/controls.js'
 import elements from './interface/elements.js'
 import fronts from './interface/fronts.js'
 
@@ -115,6 +116,9 @@ Promise.all([
     clusters(entities)
     elements(entities)
     fronts(entities)
+
+    // Layer show/hide switches (reads the rendered layers by their .label)
+    controls()
 
     // Draw the first frame, then drop the loading cover so the map is already
     // visible the moment it's revealed (no flash of empty canvas).
