@@ -9,6 +9,9 @@ const LAYERS = [
     {
         label: 'clusters',
         name: 'Clusters',
+        // The red/blue subgroups can't both be off: turning one off while the
+        // other is already off flips the other back on.
+        atLeastOneChild: true,
         children: [
             { label: 'clusters-red', name: 'Red (emerging)' },
             { label: 'clusters-blue', name: 'Blue (receding)' },
@@ -47,7 +50,24 @@ const makeSwitch = (layer, name, sub) => {
     text.textContent = name
 
     row.append(input, slider, text)
-    return row
+    return { row, input, layer }
+}
+
+// Keep at least one switch in a group active: if turning one off leaves the
+// whole group off, turn the others back on.
+const keepOneActive = (group) => {
+    group.forEach((control) => {
+        control.input.addEventListener('change', () => {
+            if (control.input.checked) return
+            if (!group.every((g) => !g.input.checked)) return
+            group
+                .filter((g) => g !== control)
+                .forEach((g) => {
+                    g.input.checked = true
+                    g.layer.visible = true // setting .checked doesn't fire change
+                })
+        })
+    })
 }
 
 export default () => {
@@ -58,15 +78,21 @@ export default () => {
     heading.textContent = 'Layers'
     panel.appendChild(heading)
 
-    LAYERS.forEach(({ label, name, children }) => {
+    LAYERS.forEach(({ label, name, children, atLeastOneChild }) => {
         const layer = findByLabel(s.viewport, label)
         if (!layer) return
-        panel.appendChild(makeSwitch(layer, name, false))
+        panel.appendChild(makeSwitch(layer, name, false).row)
 
+        const group = []
         children?.forEach((sub) => {
             const subLayer = findByLabel(s.viewport, sub.label)
-            if (subLayer) panel.appendChild(makeSwitch(subLayer, sub.name, true))
+            if (!subLayer) return
+            const control = makeSwitch(subLayer, sub.name, true)
+            panel.appendChild(control.row)
+            group.push(control)
         })
+
+        if (atLeastOneChild && group.length > 1) keepOneActive(group)
     })
 
     document.body.appendChild(panel)
