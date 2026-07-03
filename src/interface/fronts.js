@@ -1,5 +1,5 @@
 import { Graphics, Container } from 'pixi.js'
-import { polygonHull, polygonCentroid, polygonContains, group, mean } from 'd3'
+import { polygonHull, polygonCentroid, polygonContains, group } from 'd3'
 
 export default entities => {
 
@@ -10,33 +10,30 @@ export default entities => {
     stage.label = 'fronts'
     s.viewport.addChild(stage)
 
-    let clusters = group(entities, e => e['cluster'])
+    const clusters = group(entities, e => e['cluster'])
 
-    clusters.forEach((c1, i1) => {
-        clusters.forEach((c2, i2) => {
-            if ((i1 >= i2) || (i1 == -1) || (i2 == -1))
-                return
+    // Precompute each cluster's coords, hull and centroid once. The pairwise
+    // loop below is O(K²); computing polygonHull inside it rebuilt every hull
+    // ~K times. Outliers (-1) are excluded here rather than skipped per pair.
+    const meta = new Map()
+    clusters.forEach((members, id) => {
+        if (id == -1) return
+        const coordinates = members.map(e => [e.x, e.y])
+        const hull = polygonHull(coordinates)
+        meta.set(id, { coordinates, hull, center: polygonCentroid(hull) })
+    })
 
-            const coo1 = c1.map(e => [e.x, e.y])
-            const coo2 = c2.map(e => [e.x, e.y])
+    meta.forEach((c1, i1) => {
+        meta.forEach((c2, i2) => {
+            if (i1 >= i2) return // each unordered pair once (keys compared as before)
 
-            const p1 = polygonHull(coo1)
-            const p2 = polygonHull(coo2)
+            const p1 = c1.hull
+            const center_1 = c1.center
+            const center_2 = c2.center
 
-            const center_1 = polygonCentroid(p1)
-            const center_2 = polygonCentroid(p2)
-
-            let overlapping = false
-
-            coo2.forEach(point => {
-                if (polygonContains(p1, point))
-                    overlapping = true
-            })
+            const overlapping = c2.coordinates.some(point => polygonContains(p1, point))
 
             if (overlapping) {
-
-                let m1 = mean(c1.map(d => d.slope))
-                let m2 = mean(c2.map(d => d.slope))
 
                 // const circle_1 = new Graphics()
                 // circle_1.beginFill((m1 > 0) ? '0xFF0000' : '0x0000FF', 1)
