@@ -1,6 +1,14 @@
 import { BitmapText, Container, Graphics } from 'pixi.js'
-import { group, mean, polygonHull, polygonCentroid } from 'd3'
+import { group, mean, polygonHull, polygonCentroid, line, curveCatmullRomClosed } from 'd3'
 import { average, rgb, formatHex } from 'culori'
+
+// Smooth, closed blob through a set of [x, y] points. d3's line generator
+// issues moveTo/bezierCurveTo/closePath — the same methods a Pixi Graphics
+// exposes — so it can draw straight onto one via .context().
+const blob = line()
+    .x((d) => d[0])
+    .y((d) => d[1])
+    .curve(curveCatmullRomClosed)
 
 const splitInTwo = (string) => {
     const middle = Math.round(string.length / 2)
@@ -55,29 +63,10 @@ export default (entities) => {
         // Expanded polygon
         const expandedPolygon = expandPolygon(polygon, center, 10) // Adjust the factor to control expansion
 
-        // Contour with Rounded Corners, including expansion
-        for (let i = 0; i < expandedPolygon.length; i++) {
-            const currentPoint = expandedPolygon[i]
-            const nextPoint = expandedPolygon[(i + 1) % expandedPolygon.length] // Wrap around to the start
-            const prevPoint =
-                expandedPolygon[(i - 1 + expandedPolygon.length) % expandedPolygon.length] // Previous point with wrap-around
-            const controlPoint = [
-                (prevPoint[0] + currentPoint[0]) / 2,
-                (prevPoint[1] + currentPoint[1]) / 2,
-            ]
-
-            if (i === 0) {
-                g.moveTo(controlPoint[0], controlPoint[1]) // Start at the midpoint of the last segment
-            }
-
-            const midPoint = [
-                (currentPoint[0] + nextPoint[0]) / 2,
-                (currentPoint[1] + nextPoint[1]) / 2,
-            ]
-            g.quadraticCurveTo(currentPoint[0], currentPoint[1], midPoint[0], midPoint[1]) // Smooth curve
-        }
-
-        g.closePath() // Close the path
+        // Smooth, rounded blob through the expanded hull, drawn onto the group's
+        // Graphics via d3's Catmull-Rom spline (see `blob` above).
+        blob.context(g)
+        blob(expandedPolygon)
         g.fill({ color, alpha: 0.2 }) // Fill with transparency
         g.stroke({ width: 0.4, color, alpha: 0.2 }) // Contour
 
