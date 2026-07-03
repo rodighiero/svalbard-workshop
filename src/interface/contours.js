@@ -10,7 +10,7 @@ export default entities => {
 
     const stage = new Graphics()
     stage.interactiveChildren = false
-    stage.name = 'contours'
+    stage.label = 'contours'
     stage.alpha = 1
     s.viewport.addChild(stage)
 
@@ -28,8 +28,6 @@ export default entities => {
         .thresholds(thresholds)
         (entities)
 
-    stage.lineStyle(width, s.contours)
-
     density.forEach(layer => {
         layer.coordinates.forEach(array => {
             array[0].forEach(([x, y], i) => {
@@ -39,6 +37,6 @@ export default entities => {
         })
     })
 
-    stage.closePath()
+    stage.stroke({ width, color: s.contours })
 
 }

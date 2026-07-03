@@ -5,8 +5,8 @@ import './assets/main.css'
 
 // Libraries
 
-import { csv, xml, image, extent, min, scaleLinear } from 'd3'
-import { Application, BitmapFont, Texture } from 'pixi.js'
+import { csv, extent, min, scaleLinear } from 'd3'
+import { Application, Assets } from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 
 // Assets
@@ -20,22 +20,20 @@ import fronts from './interface/fronts.js'
 import keywords from './interface/keywords.js'
 import search from './interface/search.js'
 
-import fontXML from './assets/Lato.fnt'
-import fontPNG from './assets/Lato.png'
+import fontURL from './assets/Lato.fnt'
+import './assets/Lato.png' // Emit the bitmap-font page image referenced by Lato.fnt
+import backgroundURL from './assets/background.png'
 
-import backgroundImage from './assets/background.png'
-
-import entities from './data/entities.csv'
+import entitiesURL from './data/entities.csv'
 
 // Load
 
 Promise.all([
-    csv(entities),
-    xml(fontXML),
-    image(fontPNG),
-    image(backgroundImage),
+    csv(entitiesURL),
+    Assets.load(fontURL),        // Registers the 'Lato' bitmap font
+    Assets.load(backgroundURL),  // Returns a Texture
 
-]).then(([entities, fontXML, fontPNG, backgroundImage]) => {
+]).then(async ([entities, fontLato, backgroundTexture]) => {
 
 
     // Set dimensions
@@ -73,30 +71,29 @@ Promise.all([
         'contours': 0xCCCCCC,
     }
 
-    BitmapFont.install(fontXML, Texture.from(fontPNG)) // Font loader
-
-
     // Set app
 
-    s.app = new Application({
+    s.app = new Application()
+    await s.app.init({
         antialias: true,
         resolution: 2, // Interface
         // resolution: 8, // Canvas export
         autoDensity: true,
-        autoResize: true,
         resizeTo: window,
         preserveDrawingBuffer: true,
     })
 
-    document.body.prepend(s.app.view)
+    document.body.prepend(s.app.canvas)
 
 
     // Set viewport
 
     s.viewport = new Viewport({
+        screenWidth: window.innerWidth,
+        screenHeight: window.innerHeight,
         worldWidth: window.innerWidth,
         worldHeight: window.innerHeight,
-        interaction: s.app.renderer.plugins.interaction
+        events: s.app.renderer.events
     }).drag().pinch().wheel().decelerate()
         .clampZoom({
             minWidth: 50, minHeight: 50,
@@ -118,18 +115,18 @@ Promise.all([
 
         try { scale = e.viewport.lastViewport.scaleX } catch { scale = 1 }
 
-        e.viewport.children.find(child => child.name == 'fronts').alpha = zoomOut(scale)
-        e.viewport.children.find(child => child.name == 'clusters').alpha = zoomOut(scale)
-        e.viewport.children.find(child => child.name == 'contours').alpha = zoomOut(scale)
-        e.viewport.children.find(child => child.name == 'keywords').alpha = zoomOut(scale)
+        e.viewport.children.find(child => child.label == 'fronts').alpha = zoomOut(scale)
+        e.viewport.children.find(child => child.label == 'clusters').alpha = zoomOut(scale)
+        e.viewport.children.find(child => child.label == 'contours').alpha = zoomOut(scale)
+        e.viewport.children.find(child => child.label == 'keywords').alpha = zoomOut(scale)
 
-        e.viewport.children.find(child => child.name == 'elements').alpha = zoomIn(scale)
+        e.viewport.children.find(child => child.label == 'elements').alpha = zoomIn(scale)
     })
 
 
     // Rendering
 
-    background(backgroundImage)
+    background(backgroundTexture)
     contours(entities)
     keywords(entities)
     clusters(entities)

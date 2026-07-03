@@ -4,7 +4,7 @@ import { group, mean, polygonCentroid, polygonHull } from 'd3'
 export default entities => {
 
     const stage = new Graphics()
-    stage.name = 'keywords'
+    stage.label = 'keywords'
     stage.alpha = 1
     stage.interactiveChildren = false
     s.viewport.addChild(stage)
@@ -16,15 +16,17 @@ export default entities => {
         .sort((a, b) => b.slope - a.slope) // Order by linear regression
         .forEach(e => {
 
-            const bitmap = new BitmapText(
-                e.name, {
-                fontName: 'Lato',
-                fontSize: (e.frequency_norm + .5) * 20, // Normalization ([0:1] + x) + scale
-                align: 'center',
-                tint: s.gray,
+            const bitmap = new BitmapText({
+                text: e.name,
+                style: {
+                    fontFamily: 'Lato',
+                    fontSize: (e.frequency_norm + .5) * 20, // Normalization ([0:1] + x) + scale
+                    align: 'center',
+                },
             })
+            bitmap.tint = s.gray
 
-            bitmap.position.set(e.x - bitmap.textWidth / 2, e.y - bitmap.textHeight / 2)
+            bitmap.position.set(e.x - bitmap.width / 2, e.y - bitmap.height / 2)
 
 
             let overlapping = false // Check overlapping
@@ -48,9 +50,8 @@ export default entities => {
             if (!overlapping) {
 
                 const background = new Graphics();
-                // background.lineStyle(.5, 0x00FF00, .6) // Draw contour to verify
-                background.beginFill(0xFFFFFF, 1)
-                background.drawRoundedRect(bitmap.x, bitmap.y + 1.5, bitmap.textWidth, bitmap.textHeight, 1)
+                background.roundRect(bitmap.x, bitmap.y + 1.5, bitmap.width, bitmap.height, 1)
+                background.fill(0xFFFFFF)
 
                 stage.addChild(background)
                 stage.addChild(bitmap)

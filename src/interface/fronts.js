@@ -1,5 +1,5 @@
-import { Graphics, Loader, Point, Sprite, Container } from 'pixi.js'
-import { extent, polygonHull, polygonCentroid, polygonContains, group, mean } from 'd3'
+import { Graphics, Container } from 'pixi.js'
+import { polygonHull, polygonCentroid, polygonContains, group, mean } from 'd3'
 
 export default entities => {
 
@@ -7,7 +7,7 @@ export default entities => {
     const stage = new Graphics()
     stage.alpha = 1
     stage.interactiveChildren = false
-    stage.name = 'fronts'
+    stage.label = 'fronts'
     s.viewport.addChild(stage)
 
     let clusters = group(entities, e => e['cluster'])
@@ -101,9 +101,9 @@ export default entities => {
                 // container.addChild(middleLine)
 
                 const bezier = new Graphics()
-                bezier.lineStyle(1.5, s.gray)
                 bezier.moveTo(c[0], c[1]);
                 bezier.bezierCurveTo(a[0], a[1], b[0], b[1], d[0], d[1])
+                bezier.stroke({ width: 1.5, color: s.gray })
                 container.addChild(bezier)
 
             }

@@ -20,7 +20,7 @@ export default entities => {
 
     const stage = new Graphics()
     stage.interactiveChildren = false
-    stage.name = 'clusters'
+    stage.label = 'clusters'
     stage.alpha = 1
     s.viewport.addChild(stage)
 
@@ -33,8 +33,7 @@ export default entities => {
             const center = polygonCentroid(polygon)
             const colors = cluster.map(e => rgb(parseInt(e['color'], 16).toString(16).padStart(6, '0')))
             const colorRGB = average(colors, 'rgb')
-            const colorHex = formatHex(colorRGB)
-            const color = '0x' + colorHex.substring(1)
+            const color = formatHex(colorRGB) // '#rrggbb', accepted directly by Pixi v8
 
             // Function to expand the polygon outward
             const expandPolygon = (polygon, factor = 10) => {
@@ -52,9 +51,6 @@ export default entities => {
             const expandedPolygon = expandPolygon(polygon, 10); // Adjust the factor to control expansion
 
             // Contour with Rounded Corners, including expansion
-            stage.lineStyle(0.4, color, 0.2 ); // Set line style
-            stage.beginFill(color, 0.2); // Set fill color with transparency
-
             for (let i = 0; i < expandedPolygon.length; i++) {
                 const currentPoint = expandedPolygon[i];
                 const nextPoint = expandedPolygon[(i + 1) % expandedPolygon.length]; // Wrap around to the start
@@ -76,21 +72,24 @@ export default entities => {
             }
 
             stage.closePath(); // Close the path
+            stage.fill({ color, alpha: 0.2 }); // Fill with transparency
+            stage.stroke({ width: 0.4, color, alpha: 0.2 }); // Contour
 
 
 
             // Text
 
-            const bitmap = new BitmapText(
-                splitInTwo(cluster[0].cluster_subject_x),
-                {
-                    fontName: 'Lato',
+            const bitmap = new BitmapText({
+                text: splitInTwo(cluster[0].cluster_subject_x),
+                style: {
+                    fontFamily: 'Lato',
                     fontSize: 4, //5
                     align: 'center',
-                    tint: (temperature > 0 ? 0xFF0000 : 0x0000FF),
-                })
+                },
+            })
+            bitmap.tint = (temperature > 0 ? 0xFF0000 : 0x0000FF)
 
-            bitmap.position.set(center[0] - bitmap.textWidth / 2, center[1] - bitmap.textHeight / 2)
+            bitmap.position.set(center[0] - bitmap.width / 2, center[1] - bitmap.height / 2)
 
             stage.addChild(bitmap)
 

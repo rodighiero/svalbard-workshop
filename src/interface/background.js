@@ -1,9 +1,8 @@
-import { Point, Sprite, Texture } from 'pixi.js'
+import { Sprite } from 'pixi.js'
 
-export default (backgroundImage, width, height) => {
+export default (backgroundTexture) => {
 
-    let texture = Texture.from(backgroundImage)
-    let sprite = new Sprite(texture)
+    let sprite = new Sprite(backgroundTexture)
     sprite.width = window.innerWidth
     sprite.height = window.innerHeight
     sprite.interactiveChildren = false

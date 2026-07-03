@@ -3,7 +3,7 @@
        <info aa='1' size='59' smooth='1' stretchH='100' bold='0' padding='0,0,0,0' spacing='0,0' charset='' italic='0' unicode='0' face='Lato'/>
        <common scaleW='512' packed='0' pages='1' lineHeight='72' scaleH='512' base='60'/>
        <pages>
-            <page id='0' file='Lato-hd.png'/>
+            <page id='0' file='Lato.png'/>
        </pages>
         <chars count='159'>
             <char xadvance='11' x='506' chnl='0' yoffset='59' y='0' xoffset='0' id='32' page='0' height='0' width='0'/>
