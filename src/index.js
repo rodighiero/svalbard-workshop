@@ -36,6 +36,7 @@ Promise.all([
         autoDensity: true,
         resizeTo: window,
         preserveDrawingBuffer: true,
+        backgroundAlpha: 0, // Transparent canvas so the white page shows through
     }),
 ]).then(([entities]) => {
     // Only the CSV result is used; Lato.fnt loads for its side effect (font
