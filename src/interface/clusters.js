@@ -35,13 +35,13 @@ export default entities => {
             const coordinates = cluster.map(e => [e.x, e.y])
             const polygon = polygonHull(coordinates)
             const center = polygonCentroid(polygon)
-            const colors = cluster.map(e => rgb(parseInt(e['color'], 16).toString(16).padStart(6, '0')))
+            // e.color is '0xrrggbb'; strip the '0x' to hand culori a bare hex string
+            const colors = cluster.map(e => rgb(e['color'].substring(2)))
             const colorRGB = average(colors, 'rgb')
             const color = formatHex(colorRGB) // '#rrggbb', accepted directly by Pixi v8
 
-            // Function to expand the polygon outward
-            const expandPolygon = (polygon, factor = 10) => {
-                const centroid = polygonCentroid(polygon); // Get the centroid of the polygon
+            // Expand the polygon outward from its (already computed) centroid
+            const expandPolygon = (polygon, centroid, factor = 10) => {
                 return polygon.map(([x, y]) => {
                     const dx = x - centroid[0];
                     const dy = y - centroid[1];
@@ -52,7 +52,7 @@ export default entities => {
             };
 
             // Expanded polygon
-            const expandedPolygon = expandPolygon(polygon, 10); // Adjust the factor to control expansion
+            const expandedPolygon = expandPolygon(polygon, center, 10); // Adjust the factor to control expansion
 
             // Contour with Rounded Corners, including expansion
             for (let i = 0; i < expandedPolygon.length; i++) {
