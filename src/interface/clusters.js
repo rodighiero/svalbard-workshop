@@ -31,7 +31,6 @@ export default entities => {
             const coordinates = cluster.map(e => [e.x, e.y])
             const polygon = polygonHull(coordinates)
             const center = polygonCentroid(polygon)
-            // const colors = cluster.map(e => e['color'])
             const colors = cluster.map(e => rgb(parseInt(e['color'], 16).toString(16).padStart(6, '0')))
             const colorRGB = average(colors, 'rgb')
             const colorHex = formatHex(colorRGB)
@@ -83,7 +82,6 @@ export default entities => {
             // Text
 
             const bitmap = new BitmapText(
-                // (temperature > 0) ? 'H' : 'L',
                 splitInTwo(cluster[0].cluster_subject_x),
                 {
                     fontName: 'Lato',
@@ -92,18 +90,9 @@ export default entities => {
                     tint: (temperature > 0 ? 0xFF0000 : 0x0000FF),
                 })
 
-            bitmap.position.set(center[0] - bitmap.textWidth / 2, center[1] - bitmap.textHeight / 2) 
-
-
-            // const background = new Graphics()
-            // background.lineStyle(.5, 0x00FF00, .6) // Draw contour to verify
-            // background.beginFill(0xFFFFFF, 1)
-            // background.drawRoundedRect(bitmap.x, bitmap.y + 1.5, bitmap.textWidth, bitmap.textHeight, 1)
-            // stage.addChild(background)
+            bitmap.position.set(center[0] - bitmap.textWidth / 2, center[1] - bitmap.textHeight / 2)
 
             stage.addChild(bitmap)
-
-            // s.bitmaps.push(bitmap)
 
         })
 

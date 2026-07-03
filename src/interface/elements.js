@@ -2,15 +2,6 @@ import { BitmapText, Graphics, Rectangle } from 'pixi.js'
 
 import { click } from './click'
 
-const splitInTwo = string => {
-    const middle = Math.round(string.length / 2)
-    for (let i = middle, j = middle; i < string.length || j >= 0; i++, j--) {
-        if (string[i] === ' ') return string.substring(0, i) + '\n' + string.substring(i + 1)
-        if (string[j] === ' ') return string.substring(0, j) + '\n' + string.substring(j + 1)
-    }
-    return string
-}
-
 export default (entities) => {
 
     const stage = new Graphics()

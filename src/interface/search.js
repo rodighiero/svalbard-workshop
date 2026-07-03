@@ -1,18 +1,13 @@
 import { Point } from 'pixi.js'
 import autoComplete from '@tarekraafat/autocomplete.js'
 
-export default (data) => {
+export default (entities) => {
 
     // Data
 
-    const dataSearch = data.reduce((array, record) => {
-        array.push({
-            name: record[3], x: record[0], y: record[1],
-        })
-        return array
-    }, [])
-
-    console.log(dataSearch)
+    const dataSearch = entities.map(e => ({
+        name: e.title, x: e.x, y: e.y,
+    }))
 
     // The autoComplete.js Engine instance creator
 
@@ -20,9 +15,10 @@ export default (data) => {
 
         data: {
             src: dataSearch,
-            key: ['name'],
+            keys: ['name'],
             cache: true
         },
+        diacritics: true, // Match Norwegian ø/æ/å regardless of accents
         sort: (a, b) => {
             if (a.match < b.match) return -1
             if (a.match > b.match) return 1
@@ -32,9 +28,6 @@ export default (data) => {
         maxResults: 20,
         onSelection: feedback => {
 
-            console.log(feedback)
-
-            const key = feedback.selection.key
             const node = feedback.selection.value
             const { x, y, name } = node
             const center = { x: s.viewport.center.x, y: s.viewport.center.y }

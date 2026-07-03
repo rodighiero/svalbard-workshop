@@ -1,5 +1,5 @@
 # Svalbardposten's Weather Map
-## A First Concept Develompent
+## A First Concept Development
 
 <br/>
 
@@ -24,7 +24,7 @@
 
 ### Navigating Media Discourse through Network Maps
 
-This project is a component of a broader Master of Fine Arts thesis in Information Design and Data Visualization at Northeastern University. The thesis employs a Cultural Analytics approach to examine the visualization challenges of large digital archives, using Svalbardposten’s digital news archive as a case study. It explores and compares two distinct computational approaches and visualization techniques, analyzing their outcomes through the lens of Cultural Analytics principles. The results of the computational approaches and the visualizations of the study are intended as a concepetualization experiment and are not the intended final outcomes. Further refinement of the computationsl The study's exploratory nature
+This project is a component of a broader Master of Fine Arts thesis in Information Design and Data Visualization at Northeastern University. The thesis employs a Cultural Analytics approach to examine the visualization challenges of large digital archives, using Svalbardposten’s digital news archive as a case study. It explores and compares two distinct computational approaches and visualization techniques, analyzing their outcomes through the lens of Cultural Analytics principles. The results of the computational approaches and the visualizations of the study are intended as a conceptualization experiment and are not the intended final outcomes.
 
 It is important to note that the scope of this thesis—and by extension, this project—is exploratory in nature. Its primary aim is to ideate and prototype possible interactive interfaces that facilitate access to large digital archives. As such, the analytical and visualization processes presented here should be understood as preliminary and experimental. They are not intended to represent a final or comprehensive analysis but rather to serve as a foundation for future iterations, encouraging continued refinement, expansion, and exploration through computational methods. 
 
@@ -109,7 +109,7 @@ Entity extraction is performed by identifying syntactic elements within the text
 
 #### **STEP 2 – Network Construction and Clustering**
 
-Once entities are extracted, they are clustered based on frequency and co-occurrence utilizing Term Frequency-Inverse Document Frequency (TF-IDF)(Spärck Jones 1972) vectorization.  Following vectorization of the entities,, Uniform Manifold Approximation and Projection (UMAP)(McInnes, Healy, and Melville 2018) is applied for dimensionality reduction, which projects the high-dimensional relationship data onto a two-dimensional Cartesian space while preserving the topological structure of the data. With the data projected in two dimensions, clustering is performed using Hierarchical Density-Based Spatial Clustering of Applications with Noise (HDBSCAN). This density-based clustering algorithm groups entities that frequently appear together in the corpus, enabling the identification of key thematic clusters within the discourse based on actors' close relationships. It is important to note that this approach does not necessarily assign every document to a meaningful cluster; a subset of outliers with unassigned clusters are grouped into a single cluster (cluster -1) despite lacking substantive semantic commonality amongst them. 
+Once entities are extracted, they are clustered based on frequency and co-occurrence utilizing Term Frequency-Inverse Document Frequency (TF-IDF)(Spärck Jones 1972) vectorization. Following vectorization of the entities, Uniform Manifold Approximation and Projection (UMAP)(McInnes, Healy, and Melville 2018) is applied for dimensionality reduction, which projects the high-dimensional relationship data onto a two-dimensional Cartesian space while preserving the topological structure of the data. With the data projected in two dimensions, clustering is performed using Hierarchical Density-Based Spatial Clustering of Applications with Noise (HDBSCAN). This density-based clustering algorithm groups entities that frequently appear together in the corpus, enabling the identification of key thematic clusters within the discourse based on actors' close relationships. It is important to note that this approach does not necessarily assign every document to a meaningful cluster; a subset of outliers with unassigned clusters are grouped into a single cluster (cluster -1) despite lacking substantive semantic commonality amongst them. 
 
 
 <br/>
