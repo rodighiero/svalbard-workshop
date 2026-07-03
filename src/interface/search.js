@@ -11,7 +11,7 @@ export default (entities) => {
 
     // The autoComplete.js Engine instance creator
 
-    const autoCompletejs = new autoComplete({
+    new autoComplete({
 
         data: {
             src: dataSearch,
