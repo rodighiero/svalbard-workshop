@@ -18,7 +18,6 @@ import contours from './interface/contours.js'
 import elements from './interface/elements.js'
 import fronts from './interface/fronts.js'
 import keywords from './interface/keywords.js'
-import search from './interface/search.js'
 
 import fontURL from './assets/Lato.fnt'
 import './assets/Lato.png' // Emit the bitmap-font page image referenced by Lato.fnt
@@ -132,7 +131,6 @@ Promise.all([
     clusters(entities)
     elements(entities)
     fronts(entities)
-    search(entities)
 
 
     // Viewport exceptions

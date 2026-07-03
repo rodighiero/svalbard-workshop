@@ -36,7 +36,7 @@ a {
 	 * Containers		
 ******************************************************************************/
 
-#focus, #title, #search, #legenda, #award {
+#focus, #title, #legenda, #award {
 	background-color: rgba(255, 255, 255, .8);
 	position: fixed;
 	border: none;
@@ -64,12 +64,6 @@ a {
 	right: 0;
 	bottom: 10;
 	/* width: 240px; */
-}
-
-#search {
-	right: 0;
-	top: 10;
-	width: 240px;
 }
 
 #legenda {
@@ -148,59 +142,4 @@ p {
 
 .gray {
 	color: #999999;
-}
-
-/******************************************************************************
-	 * Search autocomplete
-******************************************************************************/
-
-.autoComplete_wrapper {
-	position: relative;
-	display: block;
-}
-
-.autoComplete_wrapper > input {
-	width: 100%;
-	box-sizing: border-box;
-	padding: 4px 6px;
-}
-
-.autoComplete_wrapper > ul {
-	position: absolute;
-	top: calc(100% + 4px);
-	left: 0;
-	right: 0;
-	margin: 0;
-	padding: 4px 0;
-	list-style: none;
-	background-color: #fff;
-	border: 1px solid #ccc;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
-	max-height: 320px;
-	overflow-y: auto;
-	z-index: 10;
-}
-
-.autoComplete_wrapper > ul > li {
-	margin: 0;
-	padding: 5px 8px;
-	font-size: 70%;
-	line-height: 1.3;
-	color: #000;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	cursor: pointer;
-}
-
-.autoComplete_wrapper > ul > li:hover,
-.autoComplete_wrapper > ul > li[aria-selected="true"] {
-	background-color: #385DA6;
-	color: #fff;
-}
-
-.autoComplete_wrapper > ul > li mark {
-	background: none;
-	font-weight: bold;
-	color: inherit;
 }
