@@ -81,25 +81,23 @@ Promise.all([
 
     document.body.prepend(s.app.canvas)
 
-    // Set viewport
+    // Set viewport — sized from the renderer's screen (kept in sync by the
+    // app's resizeTo: window). events + ticker come from the app.
+
+    const { width, height } = s.app.screen
 
     s.viewport = new Viewport({
-        screenWidth: window.innerWidth,
-        screenHeight: window.innerHeight,
-        worldWidth: window.innerWidth,
-        worldHeight: window.innerHeight,
+        screenWidth: width,
+        screenHeight: height,
+        worldWidth: width,
+        worldHeight: height,
         events: s.app.renderer.events,
     })
         .drag()
         .pinch()
         .wheel()
         .decelerate()
-        .clampZoom({
-            minWidth: 50,
-            minHeight: 50,
-            maxWidth: window.innerWidth,
-            maxHeight: window.innerHeight,
-        })
+        .clampZoom({ minWidth: 50, minHeight: 50, maxWidth: width, maxHeight: height })
         .clamp({ direction: 'all' })
 
     s.app.stage.addChild(s.viewport)
@@ -125,17 +123,13 @@ Promise.all([
         setTimeout(() => loading.remove(), 700)
     }
 
-    // Viewport exceptions
-
-    window.onresize = () => {
-        s.viewport.resize()
-    } // Prevent pinch gesture in Chrome
-
-    window.addEventListener(
-        'wheel',
-        (e) => {
-            e.preventDefault()
-        },
-        { passive: false },
-    ) // Prevent wheel interference
+    // Keep the viewport in sync with the auto-resized canvas, and re-draw (the
+    // app renders on demand). The wheel handler stops the browser from zooming
+    // the page when the pointer is over the map.
+    window.addEventListener('resize', () => {
+        const { width, height } = s.app.screen
+        s.viewport.resize(width, height, width, height)
+        s.app.render()
+    })
+    window.addEventListener('wheel', (e) => e.preventDefault(), { passive: false })
 })
