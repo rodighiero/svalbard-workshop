@@ -5,7 +5,11 @@
 // "Reset view" button that animates the camera back to its initial framing.
 
 const LAYERS = [
-    { label: 'elements', name: 'Articles' },
+    {
+        label: 'elements',
+        name: 'Articles',
+        children: [{ label: 'elements-years', name: 'Years' }],
+    },
     {
         label: 'clusters',
         name: 'Clusters',

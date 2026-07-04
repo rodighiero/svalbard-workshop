@@ -16,6 +16,12 @@ export default (entities) => {
     const crosses = new Graphics()
     stage.addChild(crosses)
 
+    // Year labels live in their own container so a sub-switch can toggle them
+    // independently of the crosses.
+    const years = new Container()
+    years.label = 'elements-years'
+    stage.addChild(years)
+
     entities.forEach((e) => {
         // Cross
 
@@ -37,7 +43,7 @@ export default (entities) => {
         })
         bitmap.tint = color
         bitmap.position.set(e.x + 0.3, e.y + 0.1) //(e.x + .6, e.y + 0.2)
-        stage.addChild(bitmap)
+        years.addChild(bitmap)
 
         // Interaction
 
