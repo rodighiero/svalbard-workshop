@@ -148,13 +148,6 @@ a:hover {
 
 .key-row b { font-weight: 600; }
 
-.marker {
-	font-family: var(--mono);
-	font-weight: 700;
-	font-size: 15px;
-	line-height: 1;
-}
-
 .hi { color: var(--high); }
 .lo { color: var(--low); }
 
