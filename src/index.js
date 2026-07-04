@@ -119,8 +119,9 @@ Promise.all([
         .decelerate()
         // Zoom is bounded, but panning is free: the contours/blobs spill past the
         // article extent, so a world-bounds clamp would hide that overhang. Use
-        // the Reset view button to recenter.
-        .clampZoom({ minWidth: 50, minHeight: 50, maxWidth: width, maxHeight: height })
+        // the Reset view button to recenter. The max span is 1.4x the screen, so
+        // the map can be zoomed out a bit past full scale for a wider overview.
+        .clampZoom({ minWidth: 50, minHeight: 50, maxWidth: width * 1.4, maxHeight: height * 1.4 })
 
     s.app.stage.addChild(s.viewport)
 
