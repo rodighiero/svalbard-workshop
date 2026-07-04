@@ -3,7 +3,7 @@
 
 // Libraries
 
-import { csv, extent, min, scaleLinear } from 'd3'
+import { csv, extent, min, scaleLinear, group } from 'd3'
 import { Application, Assets } from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
 
@@ -38,9 +38,29 @@ Promise.all([
         preserveDrawingBuffer: true,
         backgroundAlpha: 0, // Transparent canvas so the white page shows through
     }),
-]).then(([entities]) => {
+]).then(([allEntities]) => {
     // Only the CSV result is used; Lato.fnt loads for its side effect (font
     // registration) and app.init() returns nothing.
+
+    // Drop detached clusters: any whose centroid is a far outlier (> 2σ from the
+    // overall centroid — e.g. "Holiday Giveaways Events", which sits alone far to
+    // one side) is cut from the visualization so it doesn't clutter the view or
+    // squeeze the main body. Detected by distance, not a hardcoded id, so a data
+    // regeneration is fine.
+    const clustered = allEntities.filter((e) => e.cluster !== '-1')
+    const avg = (arr, key) => arr.reduce((a, e) => a + parseInt(e[key]), 0) / arr.length
+    const cx = avg(clustered, 'x')
+    const cy = avg(clustered, 'y')
+
+    const distances = [...group(clustered, (e) => e.cluster)].map(([id, members]) => ({
+        id,
+        d: Math.hypot(avg(members, 'x') - cx, avg(members, 'y') - cy),
+    }))
+    const dMean = distances.reduce((a, c) => a + c.d, 0) / distances.length
+    const dStd = Math.sqrt(distances.reduce((a, c) => a + (c.d - dMean) ** 2, 0) / distances.length)
+    const detached = new Set(distances.filter((c) => c.d > dMean + 2 * dStd).map((c) => c.id))
+
+    const entities = allEntities.filter((e) => !detached.has(e.cluster))
 
     // Set dimensions
 
