@@ -70,20 +70,30 @@ export const paintBlob = (g, expanded, color) => {
 // "Education system"); no cluster title contains an acronym to preserve.
 const titleCase = (string) => string.toLowerCase().replace(/\b\w/g, (ch) => ch.toUpperCase())
 
-// Break a topic label onto two lines at the space nearest the middle.
-const splitInTwo = (string) => {
-    const middle = Math.round(string.length / 2)
-    for (let i = middle, j = middle; i < string.length || j >= 0; i++, j--) {
-        if (string[i] === ' ') return string.substring(0, i) + '\n' + string.substring(i + 1)
-        if (string[j] === ' ') return string.substring(0, j) + '\n' + string.substring(j + 1)
+// Break a topic label across up to three balanced lines (one word per line for
+// the common three-word titles) for a centred, stacked label.
+const splitInThree = (string) => {
+    const words = string.split(' ').filter(Boolean)
+    const lines = Math.min(3, words.length)
+    if (lines <= 1) return string
+
+    const base = Math.floor(words.length / lines)
+    let extra = words.length % lines // spread the remainder over the first lines
+    const out = []
+    let i = 0
+    while (i < words.length) {
+        const take = base + (extra > 0 ? 1 : 0)
+        if (extra > 0) extra--
+        out.push(words.slice(i, i + take).join(' '))
+        i += take
     }
-    return string
+    return out.join('\n')
 }
 
 // The cluster's topic label, centred on its centroid and tinted red/blue.
 export const makeLabel = (c) => {
     const bitmap = new BitmapText({
-        text: splitInTwo(titleCase(c.subject)),
+        text: splitInThree(titleCase(c.subject)),
         style: { fontFamily: 'Lato', fontSize: 4, align: 'center' },
     })
     bitmap.tint = c.key === 'red' ? 0xff0000 : 0x0000ff
