@@ -12,6 +12,7 @@ export default (entities) => {
     // blob — each paintBlob commits with its own red/blue tint.
     const fills = new Graphics()
     fills.label = 'clusters-fills'
+    fills.visible = false // off by default; the fronts read on their own
     const labels = new Container()
     labels.label = 'clusters-labels'
     stage.addChild(fills, labels)
@@ -24,6 +25,7 @@ export default (entities) => {
         labelList.push(label)
     })
 
-    // Nudge overlapping labels apart before they're drawn.
-    deconflictLabels(labelList)
+    // Nudge labels apart before they're drawn. The generous padding keeps a gap
+    // between neighbours so the fronts running between clusters have room.
+    deconflictLabels(labelList, { padding: 4 })
 }
