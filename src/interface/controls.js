@@ -6,7 +6,6 @@
 
 const LAYERS = [
     { label: 'elements', name: 'Articles' },
-    { label: 'fronts', name: 'Fronts' },
     {
         label: 'clusters',
         name: 'Clusters',
@@ -16,6 +15,9 @@ const LAYERS = [
         children: [
             { label: 'clusters-red', name: 'Red (emerging)' },
             { label: 'clusters-blue', name: 'Blue (receding)' },
+            // "Fronts" is a mode: when on, the red/blue fills are replaced by
+            // the red↔blue overlap patches (see `mode` handling below).
+            { label: 'fronts', name: 'Fronts', mode: true },
         ],
     },
     { label: 'contours', name: 'Contours' },
@@ -54,6 +56,22 @@ const makeSwitch = (layer, name, sub) => {
     return { row, input, layer }
 }
 
+// A "mode" sub-switch (Fronts): while it's on, the sibling switches are dimmed
+// and disabled and their layers hidden — the mode's own layer stands in for
+// them. Turning it off restores each sibling to its own on/off state.
+const wireMode = (mode, siblings) => {
+    const apply = () => {
+        const on = mode.input.checked
+        siblings.forEach((c) => {
+            c.input.disabled = on
+            c.row.classList.toggle('disabled', on)
+            c.layer.visible = on ? false : c.input.checked
+        })
+    }
+    mode.input.addEventListener('change', apply)
+    apply()
+}
+
 // Keep at least one switch in a group active: if turning one off leaves the
 // whole group off, turn the others back on.
 const keepOneActive = (group) => {
@@ -85,15 +103,18 @@ export default () => {
         panel.appendChild(makeSwitch(layer, name, false).row)
 
         const group = []
+        let modeControl = null
         children?.forEach((sub) => {
             const subLayer = findByLabel(s.viewport, sub.label)
             if (!subLayer) return
             const control = makeSwitch(subLayer, sub.name, true)
             panel.appendChild(control.row)
-            group.push(control)
+            if (sub.mode) modeControl = control
+            else group.push(control)
         })
 
         if (atLeastOneChild && group.length > 1) keepOneActive(group)
+        if (modeControl) wireMode(modeControl, group)
     })
 
     // Snapshot the initial camera now (before any user interaction) and jump
