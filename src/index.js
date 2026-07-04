@@ -124,6 +124,11 @@ Promise.all([
 
     s.app.stage.addChild(s.viewport)
 
+    // Start slightly zoomed in on the map's center (the default scale of 1 fits
+    // the whole world; this tightens the initial framing). Captured as the
+    // "home" view by controls(), so Reset view returns here.
+    s.viewport.setZoom(1.3, true)
+
     // Rendering
 
     contours(entities)
