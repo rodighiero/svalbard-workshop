@@ -94,7 +94,7 @@ const splitInThree = (string) => {
 export const makeLabel = (c) => {
     const bitmap = new BitmapText({
         text: splitInThree(titleCase(c.subject)),
-        style: { fontFamily: 'Lato', fontSize: 4, align: 'center' },
+        style: { fontFamily: 'Lato', fontSize: 3, lineHeight: 3, align: 'center' },
     })
     bitmap.tint = c.key === 'red' ? 0xff0000 : 0x0000ff
     bitmap.position.set(c.center[0] - bitmap.width / 2, c.center[1] - bitmap.height / 2)
