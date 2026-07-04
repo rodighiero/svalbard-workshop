@@ -100,3 +100,37 @@ export const makeLabel = (c) => {
     bitmap.position.set(c.center[0] - bitmap.width / 2, c.center[1] - bitmap.height / 2)
     return bitmap
 }
+
+// Nudge overlapping labels apart so their topic titles stay legible. Each label
+// starts on its cluster centroid (makeLabel); this pushes any colliding pair
+// along the axis of least overlap, so every label ends up as close to its
+// centroid as it can be without overlapping a neighbour. Positions are the
+// labels' top-left corners (x/y), so bounds are simple axis-aligned boxes.
+export const deconflictLabels = (labels, { padding = 0.5, iterations = 80 } = {}) => {
+    for (let iter = 0; iter < iterations; iter++) {
+        let moved = false
+        for (let i = 0; i < labels.length; i++) {
+            for (let j = i + 1; j < labels.length; j++) {
+                const a = labels[i]
+                const b = labels[j]
+                const dx = b.x + b.width / 2 - (a.x + a.width / 2)
+                const dy = b.y + b.height / 2 - (a.y + a.height / 2)
+                const overlapX = (a.width + b.width) / 2 + padding - Math.abs(dx)
+                const overlapY = (a.height + b.height) / 2 + padding - Math.abs(dy)
+                if (overlapX <= 0 || overlapY <= 0) continue // not colliding
+
+                if (overlapX < overlapY) {
+                    const shift = (overlapX / 2) * (dx < 0 ? -1 : 1)
+                    a.x -= shift
+                    b.x += shift
+                } else {
+                    const shift = (overlapY / 2) * (dy < 0 ? -1 : 1)
+                    a.y -= shift
+                    b.y += shift
+                }
+                moved = true
+            }
+        }
+        if (!moved) break
+    }
+}
