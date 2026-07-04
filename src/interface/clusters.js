@@ -49,19 +49,19 @@ export default (entities) => {
         const colorRGB = average(colors, 'rgb')
         const color = formatHex(colorRGB) // '#rrggbb', accepted directly by Pixi v8
 
-        // Expand the polygon outward from its (already computed) centroid
-        const expandPolygon = (polygon, centroid, factor = 10) => {
-            return polygon.map(([x, y]) => {
-                const dx = x - centroid[0]
-                const dy = y - centroid[1]
-                const distance = Math.sqrt(dx * dx + dy * dy)
-                const scale = (distance + factor) / distance // Expand by the factor
-                return [centroid[0] + dx * scale, centroid[1] + dy * scale]
-            })
+        // Grow the hull proportionally about its centroid (a uniform scale), so
+        // every cluster expands by the same fraction of its own size. A fixed
+        // additive margin instead ballooned small, tight clusters.
+        const expandPolygon = (polygon, centroid, growth) => {
+            const scale = 1 + growth
+            return polygon.map(([x, y]) => [
+                centroid[0] + (x - centroid[0]) * scale,
+                centroid[1] + (y - centroid[1]) * scale,
+            ])
         }
 
-        // Expanded polygon
-        const expandedPolygon = expandPolygon(polygon, center, 10) // Adjust the factor to control expansion
+        // Expanded polygon (0.15 = 15% padding around the points)
+        const expandedPolygon = expandPolygon(polygon, center, 0.15)
 
         // Smooth blob through the edge MIDPOINTS of the expanded hull (as the
         // original corner-rounding did), so the footprint matches the pre-spline
