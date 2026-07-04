@@ -56,20 +56,26 @@ const makeSwitch = (layer, name, sub) => {
     return { row, input, layer }
 }
 
-// A "mode" sub-switch (Fronts): while it's on, the sibling switches are dimmed
-// and disabled and their layers hidden — the mode's own layer stands in for
-// them. Turning it off restores each sibling to its own on/off state.
+// Flip a switch (and its layer) without firing a change event, so coupling
+// listeners don't cascade.
+const setSwitch = (control, on) => {
+    control.input.checked = on
+    control.layer.visible = on
+}
+
+// A "mode" sub-switch (Fronts) is mutually exclusive with its siblings, done by
+// toggling — not disabling — so every switch stays clickable: turning the mode
+// on turns the siblings off; turning it off restores them (never an empty
+// group); turning any sibling on turns the mode off.
 const wireMode = (mode, siblings) => {
-    const apply = () => {
-        const on = mode.input.checked
-        siblings.forEach((c) => {
-            c.input.disabled = on
-            c.row.classList.toggle('disabled', on)
-            c.layer.visible = on ? false : c.input.checked
+    mode.input.addEventListener('change', () => {
+        siblings.forEach((c) => setSwitch(c, !mode.input.checked))
+    })
+    siblings.forEach((c) => {
+        c.input.addEventListener('change', () => {
+            if (c.input.checked) setSwitch(mode, false)
         })
-    }
-    mode.input.addEventListener('change', apply)
-    apply()
+    })
 }
 
 // Keep at least one switch in a group active: if turning one off leaves the

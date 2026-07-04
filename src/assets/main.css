@@ -178,11 +178,6 @@ p {
 	margin-left: 20px;
 }
 
-.switch.disabled {
-	opacity: 0.4;
-	pointer-events: none;
-}
-
 .switch-label {
 	font-size: 60%;
 }
