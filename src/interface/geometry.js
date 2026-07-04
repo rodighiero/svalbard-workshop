@@ -1,3 +1,4 @@
+import { BitmapText } from 'pixi.js'
 import { group, mean, polygonHull, polygonCentroid, line, curveCatmullRomClosed } from 'd3'
 import { average, rgb, formatHex } from 'culori'
 
@@ -63,4 +64,25 @@ export const paintBlob = (g, expanded, color) => {
     blob(midpoints)
     g.fill({ color, alpha: 0.2 })
     g.stroke({ width: 0.4, color, alpha: 0.2 })
+}
+
+// Break a topic label onto two lines at the space nearest the middle.
+const splitInTwo = (string) => {
+    const middle = Math.round(string.length / 2)
+    for (let i = middle, j = middle; i < string.length || j >= 0; i++, j--) {
+        if (string[i] === ' ') return string.substring(0, i) + '\n' + string.substring(i + 1)
+        if (string[j] === ' ') return string.substring(0, j) + '\n' + string.substring(j + 1)
+    }
+    return string
+}
+
+// The cluster's topic label, centred on its centroid and tinted red/blue.
+export const makeLabel = (c) => {
+    const bitmap = new BitmapText({
+        text: splitInTwo(c.subject),
+        style: { fontFamily: 'Lato', fontSize: 4, align: 'center' },
+    })
+    bitmap.tint = c.key === 'red' ? 0xff0000 : 0x0000ff
+    bitmap.position.set(c.center[0] - bitmap.width / 2, c.center[1] - bitmap.height / 2)
+    return bitmap
 }

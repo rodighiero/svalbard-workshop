@@ -1,6 +1,6 @@
 import { Graphics, Container } from 'pixi.js'
 import { polygonContains } from 'd3'
-import { clusterGeometry, paintBlob } from './geometry.js'
+import { clusterGeometry, paintBlob, makeLabel } from './geometry.js'
 
 // Two convex hulls overlap if either has a vertex inside the other.
 const overlap = (a, b) =>
@@ -60,6 +60,8 @@ export default (entities) => {
     }
 
     // Draw only the clusters that take part in a front, exactly as clusters.js
-    // draws them (shared paintBlob), so they match the normal view.
+    // draws them (shared blob + label), so they match the normal view. Labels
+    // are added last so they sit on top of the blobs and curves.
     shown.forEach((c) => paintBlob(blobs, c.expanded, c.color))
+    shown.forEach((c) => stage.addChild(makeLabel(c)))
 }
