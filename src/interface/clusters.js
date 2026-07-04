@@ -7,24 +7,23 @@ export default (entities) => {
     stage.label = 'clusters'
     s.viewport.addChild(stage)
 
-    // Red (emerging) and blue (receding) subgroups toggle independently; each is
-    // a labelled Container holding its own hull Graphics plus its labels.
-    const groups = { red: new Container(), blue: new Container() }
-    groups.red.label = 'clusters-red'
-    groups.blue.label = 'clusters-blue'
-    const graphics = { red: new Graphics(), blue: new Graphics() }
-    groups.red.addChild(graphics.red)
-    groups.blue.addChild(graphics.blue)
-    stage.addChild(groups.red, groups.blue)
+    // Fills and labels are independent layers so they can be toggled separately
+    // (e.g. labels alone, alongside the fronts). The fill Graphics holds every
+    // blob — each paintBlob commits with its own red/blue tint.
+    const fills = new Graphics()
+    fills.label = 'clusters-fills'
+    const labels = new Container()
+    labels.label = 'clusters-labels'
+    stage.addChild(fills, labels)
 
-    // Collect every label (across both red/blue groups) so overlaps are resolved
-    // globally, then nudge colliding pairs apart before they're drawn.
-    const labels = []
+    const labelList = []
     clusterGeometry(entities).forEach((c) => {
-        paintBlob(graphics[c.key], c.expanded, c.color)
+        paintBlob(fills, c.expanded, c.color)
         const label = makeLabel(c)
-        groups[c.key].addChild(label)
-        labels.push(label)
+        labels.addChild(label)
+        labelList.push(label)
     })
-    deconflictLabels(labels)
+
+    // Nudge overlapping labels apart before they're drawn.
+    deconflictLabels(labelList)
 }

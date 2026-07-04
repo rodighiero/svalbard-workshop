@@ -1,8 +1,8 @@
 // Layer switches — a small panel of toggles that show/hide each viewport
-// layer by flipping its `.visible`. Call after all layers are rendered so
-// they can be located by their `.label`. Some layers expose nested
-// sub-switches (e.g. the red/blue cluster subgroups). The panel also holds a
-// "Reset view" button that animates the camera back to its initial framing.
+// layer by flipping its `.visible`. Call after all layers are rendered so they
+// can be located by their `.label`. Some layers expose nested sub-switches
+// (Clusters splits into independently toggleable Fills, Labels, and Fronts).
+// The panel also holds zoom and "Reset view" controls.
 
 const LAYERS = [
     {
@@ -13,15 +13,12 @@ const LAYERS = [
     {
         label: 'clusters',
         name: 'Clusters',
-        // The red/blue subgroups can't both be off: turning one off while the
-        // other is already off flips the other back on.
-        atLeastOneChild: true,
         children: [
-            { label: 'clusters-red', name: 'Red (emerging)' },
-            { label: 'clusters-blue', name: 'Blue (receding)' },
-            // "Fronts" is a mode: when on, the red/blue fills are replaced by
-            // the red↔blue overlap patches (see `mode` handling below).
-            { label: 'fronts', name: 'Fronts', mode: true },
+            { label: 'clusters-fills', name: 'Fills' },
+            { label: 'clusters-labels', name: 'Labels' },
+            // Front curves only — off by default; combine with Labels (and no
+            // Fills) to read the fronts and their topic labels alone.
+            { label: 'fronts', name: 'Fronts' },
         ],
     },
     { label: 'contours', name: 'Contours' },
@@ -60,48 +57,6 @@ const makeSwitch = (layer, name, sub) => {
     return { row, input, layer }
 }
 
-// Flip a switch (and its layer) without firing a change event, so coupling
-// listeners don't cascade.
-const setSwitch = (control, on) => {
-    control.input.checked = on
-    control.layer.visible = on
-}
-
-// A "mode" sub-switch (Fronts) is mutually exclusive with its siblings, done by
-// toggling — not disabling — so every switch stays clickable: turning the mode
-// on turns the siblings off; turning it off restores them (never an empty
-// group); turning any sibling on turns the mode off.
-const wireMode = (mode, siblings) => {
-    mode.input.addEventListener('change', () => {
-        siblings.forEach((c) => setSwitch(c, !mode.input.checked))
-    })
-    siblings.forEach((c) => {
-        c.input.addEventListener('change', () => {
-            if (c.input.checked) setSwitch(mode, false)
-        })
-    })
-}
-
-// Keep at least one switch in a group active: if turning one off leaves the
-// whole group off, turn the others back on.
-const keepOneActive = (group) => {
-    group.forEach((control) => {
-        control.input.addEventListener('change', () => {
-            if (control.input.checked) return
-            if (!group.every((g) => !g.input.checked)) return
-            group
-                .filter((g) => g !== control)
-                .forEach((g) => {
-                    g.input.checked = true
-                    g.layer.visible = true // setting .checked doesn't fire change
-                })
-        })
-    })
-}
-
-// Each sub-switch can carry its cluster's own High/Low colour on its toggle.
-const ACCENT = { 'clusters-red': 'accent-red', 'clusters-blue': 'accent-blue' }
-
 export default () => {
     const panel = document.createElement('div')
     panel.id = 'controls'
@@ -111,25 +66,16 @@ export default () => {
     heading.textContent = 'Chart layers'
     panel.appendChild(heading)
 
-    LAYERS.forEach(({ label, name, children, atLeastOneChild }) => {
+    LAYERS.forEach(({ label, name, children }) => {
         const layer = findByLabel(s.viewport, label)
         if (!layer) return
         panel.appendChild(makeSwitch(layer, name, false).row)
 
-        const group = []
-        let modeControl = null
         children?.forEach((sub) => {
             const subLayer = findByLabel(s.viewport, sub.label)
             if (!subLayer) return
-            const control = makeSwitch(subLayer, sub.name, true)
-            if (ACCENT[sub.label]) control.row.classList.add(ACCENT[sub.label])
-            panel.appendChild(control.row)
-            if (sub.mode) modeControl = control
-            else group.push(control)
+            panel.appendChild(makeSwitch(subLayer, sub.name, true).row)
         })
-
-        if (atLeastOneChild && group.length > 1) keepOneActive(group)
-        if (modeControl) wireMode(modeControl, group)
     })
 
     // View controls. Snapshot the initial camera now (before any user

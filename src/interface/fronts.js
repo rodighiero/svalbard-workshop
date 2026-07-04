@@ -1,6 +1,6 @@
 import { Graphics, Container } from 'pixi.js'
 import { polygonContains } from 'd3'
-import { clusterGeometry, paintBlob, makeLabel } from './geometry.js'
+import { clusterGeometry } from './geometry.js'
 
 // Two convex hulls overlap if either has a vertex inside the other.
 const overlap = (a, b) =>
@@ -10,28 +10,20 @@ export default (entities) => {
     const stage = new Container()
     stage.interactiveChildren = false
     stage.label = 'fronts'
-    stage.visible = false // opt-in mode, toggled from the Clusters switches
+    stage.visible = false // opt-in, toggled independently of fills and labels
     s.viewport.addChild(stage)
 
-    // Blobs of the overlapping clusters (added first so the curves sit on top).
-    const blobs = new Graphics()
-    stage.addChild(blobs)
-
     const geoms = clusterGeometry(entities)
-    const shown = new Set()
 
     // A front marks the friction between emerging and receding discourse: draw a
-    // curve for each red↔blue pair whose blobs overlap, and keep the two
-    // clusters themselves visible (no separate overlap shape).
+    // curve for each red↔blue pair whose blobs overlap. Just the curves — fills
+    // and labels are their own layers now, so any combination can be shown.
     for (let i = 0; i < geoms.length; i++) {
         for (let j = i + 1; j < geoms.length; j++) {
             const c1 = geoms[i]
             const c2 = geoms[j]
             if (c1.key === c2.key) continue // opposite colours only
             if (!overlap(c1.expanded, c2.expanded)) continue
-
-            shown.add(c1)
-            shown.add(c2)
 
             const container = new Container()
             stage.addChild(container)
@@ -58,10 +50,4 @@ export default (entities) => {
             container.addChild(bezier)
         }
     }
-
-    // Draw only the clusters that take part in a front, exactly as clusters.js
-    // draws them (shared blob + label), so they match the normal view. Labels
-    // are added last so they sit on top of the blobs and curves.
-    shown.forEach((c) => paintBlob(blobs, c.expanded, c.color))
-    shown.forEach((c) => stage.addChild(makeLabel(c)))
 }

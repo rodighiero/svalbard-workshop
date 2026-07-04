@@ -254,10 +254,6 @@ a:hover {
 .switch input:checked + .slider { background: var(--low); }
 .switch input:checked + .slider::before { transform: translateX(12px); }
 
-/* Cluster subgroups carry their own High/Low colour when on. */
-.switch.accent-red input:checked + .slider { background: var(--high); }
-.switch.accent-blue input:checked + .slider { background: var(--low); }
-
 .switch-label { font-size: 11.5px; }
 
 /******************************************************************************
