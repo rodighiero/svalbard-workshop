@@ -46,15 +46,10 @@ Promise.all([
 
     const ext_X = extent(entities, (e) => parseInt(e.x))
     const ext_Y = extent(entities, (e) => parseInt(e.y))
-    const margin = 150
     const smallerDimension = min([window.innerWidth, window.innerHeight])
 
-    const scale_X = scaleLinear()
-        .domain(ext_X)
-        .range([margin, smallerDimension - margin])
-    const scale_Y = scaleLinear()
-        .domain(ext_Y)
-        .range([margin, smallerDimension - margin])
+    const scale_X = scaleLinear().domain(ext_X).range([0, smallerDimension])
+    const scale_Y = scaleLinear().domain(ext_Y).range([0, smallerDimension])
 
     const marginTop =
         window.innerWidth > window.innerHeight ? 0 : (window.innerHeight - window.innerWidth) / 2
