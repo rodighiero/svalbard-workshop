@@ -66,6 +66,10 @@ export const paintBlob = (g, expanded, color) => {
     g.stroke({ width: 0.4, color, alpha: 0.2 })
 }
 
+// Normalise a label to Title Case (the CSV mixes "Climate Analysis" with
+// "Education system"); no cluster title contains an acronym to preserve.
+const titleCase = (string) => string.toLowerCase().replace(/\b\w/g, (ch) => ch.toUpperCase())
+
 // Break a topic label onto two lines at the space nearest the middle.
 const splitInTwo = (string) => {
     const middle = Math.round(string.length / 2)
@@ -79,7 +83,7 @@ const splitInTwo = (string) => {
 // The cluster's topic label, centred on its centroid and tinted red/blue.
 export const makeLabel = (c) => {
     const bitmap = new BitmapText({
-        text: splitInTwo(c.subject),
+        text: splitInTwo(titleCase(c.subject)),
         style: { fontFamily: 'Lato', fontSize: 4, align: 'center' },
     })
     bitmap.tint = c.key === 'red' ? 0xff0000 : 0x0000ff
