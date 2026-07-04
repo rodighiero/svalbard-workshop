@@ -63,7 +63,6 @@ export const paintBlob = (g, expanded, color) => {
     blob.context(g)
     blob(midpoints)
     g.fill({ color, alpha: 0.2 })
-    g.stroke({ width: 0.4, color, alpha: 0.2 })
 }
 
 // Normalise a label to Title Case (the CSV mixes "Climate Analysis" with
