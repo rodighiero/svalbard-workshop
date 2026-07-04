@@ -17,9 +17,10 @@ export default (entities) => {
     stage.addChild(crosses)
 
     // Year labels live in their own container so a sub-switch can toggle them
-    // independently of the crosses.
+    // independently of the crosses. Off by default.
     const years = new Container()
     years.label = 'elements-years'
+    years.visible = false
     stage.addChild(years)
 
     entities.forEach((e) => {
