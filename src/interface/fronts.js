@@ -1,56 +1,10 @@
 import { Graphics, Container } from 'pixi.js'
-import { polygonHull, polygonCentroid, group, mean } from 'd3'
-import { average, rgb, formatHex } from 'culori'
+import { polygonContains } from 'd3'
+import { clusterGeometry, paintBlob } from './geometry.js'
 
-// Grow a hull proportionally about its centroid (matches clusters.js) so the
-// overlap patches line up with the drawn cluster blobs.
-const expand = (polygon, centroid, growth = 0.15) => {
-    const scale = 1 + growth
-    return polygon.map(([x, y]) => [
-        centroid[0] + (x - centroid[0]) * scale,
-        centroid[1] + (y - centroid[1]) * scale,
-    ])
-}
-
-// Intersection of two convex polygons via Sutherland–Hodgman clipping. Returns
-// the clipped polygon (empty if they don't overlap). Orientation-agnostic: the
-// interior side of each clip edge is chosen using the clip polygon's centroid.
-const intersect = (subject, clip) => {
-    const cc = polygonCentroid(clip)
-    const side = (a, b, p) => (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])
-    const lineIntersect = (a, b, p, q) => {
-        const a1 = b[1] - a[1]
-        const b1 = a[0] - b[0]
-        const c1 = a1 * a[0] + b1 * a[1]
-        const a2 = q[1] - p[1]
-        const b2 = p[0] - q[0]
-        const c2 = a2 * p[0] + b2 * p[1]
-        const det = a1 * b2 - a2 * b1
-        if (det === 0) return q
-        return [(b2 * c1 - b1 * c2) / det, (a1 * c2 - a2 * c1) / det]
-    }
-
-    let output = subject
-    for (let i = 0; i < clip.length && output.length; i++) {
-        const a = clip[i]
-        const b = clip[(i + 1) % clip.length]
-        const interior = Math.sign(side(a, b, cc))
-        const inside = (p) => side(a, b, p) === 0 || Math.sign(side(a, b, p)) === interior
-        const input = output
-        output = []
-        for (let j = 0; j < input.length; j++) {
-            const cur = input[j]
-            const prev = input[(j + input.length - 1) % input.length]
-            if (inside(cur)) {
-                if (!inside(prev)) output.push(lineIntersect(a, b, prev, cur))
-                output.push(cur)
-            } else if (inside(prev)) {
-                output.push(lineIntersect(a, b, prev, cur))
-            }
-        }
-    }
-    return output
-}
+// Two convex hulls overlap if either has a vertex inside the other.
+const overlap = (a, b) =>
+    a.some((p) => polygonContains(b, p)) || b.some((p) => polygonContains(a, p))
 
 export default (entities) => {
     const stage = new Container()
@@ -59,46 +13,26 @@ export default (entities) => {
     stage.visible = false // opt-in mode, toggled from the Clusters switches
     s.viewport.addChild(stage)
 
-    // One Graphics batches every overlap patch; curves are drawn per pair.
-    const patches = new Graphics()
-    stage.addChild(patches)
+    // Blobs of the overlapping clusters (added first so the curves sit on top).
+    const blobs = new Graphics()
+    stage.addChild(blobs)
 
-    // Precompute per cluster: expanded hull, centroid, mean colour, and whether
-    // it's red (emerging, temperature > 0) or blue (receding).
-    const meta = new Map()
-    group(entities, (e) => e['cluster']).forEach((members, id) => {
-        if (id == -1) return
-        const hull = polygonHull(members.map((e) => [e.x, e.y]))
-        if (!hull) return
-        const center = polygonCentroid(hull)
-        const temperature = mean(members.map((e) => e.temperature))
-        const colors = members.map((e) => rgb(e['color'].substring(2)))
-        meta.set(id, {
-            center,
-            expanded: expand(hull, center),
-            key: temperature > 0 ? 'red' : 'blue',
-            color: formatHex(average(colors, 'rgb')),
-        })
-    })
+    const geoms = clusterGeometry(entities)
+    const shown = new Set()
 
-    // A front is the friction between emerging and receding discourse: draw one
-    // (overlap patch + curve) only where a red and a blue cluster actually
-    // overlap. The patch is the intersection of their (expanded) hulls.
-    meta.forEach((c1, i1) => {
-        meta.forEach((c2, i2) => {
-            if (i1 >= i2) return // each unordered pair once
-            if (c1.key === c2.key) return // opposite colours only
+    // A front marks the friction between emerging and receding discourse: draw a
+    // curve for each red↔blue pair whose blobs overlap, and keep the two
+    // clusters themselves visible (no separate overlap shape).
+    for (let i = 0; i < geoms.length; i++) {
+        for (let j = i + 1; j < geoms.length; j++) {
+            const c1 = geoms[i]
+            const c2 = geoms[j]
+            if (c1.key === c2.key) continue // opposite colours only
+            if (!overlap(c1.expanded, c2.expanded)) continue
 
-            const patch = intersect(c1.expanded, c2.expanded)
-            if (patch.length < 3) return // hulls don't overlap
+            shown.add(c1)
+            shown.add(c2)
 
-            // Overlap patch — both colours at low alpha, reproducing the blend
-            // seen where the two blobs cross in the normal view.
-            const flat = patch.flat()
-            patches.poly(flat).fill({ color: c1.color, alpha: 0.25 })
-            patches.poly(flat).fill({ color: c2.color, alpha: 0.25 })
-
-            // Front curve between the two cluster centres
             const container = new Container()
             stage.addChild(container)
             container.x = (c1.center[0] + c2.center[0]) / 2
@@ -122,6 +56,10 @@ export default (entities) => {
             bezier.bezierCurveTo(a[0], a[1], b[0], b[1], d[0], d[1])
             bezier.stroke({ width: 1.5, color: s.gray })
             container.addChild(bezier)
-        })
-    })
+        }
+    }
+
+    // Draw only the clusters that take part in a front, exactly as clusters.js
+    // draws them (shared paintBlob), so they match the normal view.
+    shown.forEach((c) => paintBlob(blobs, c.expanded, c.color))
 }
