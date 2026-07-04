@@ -7,40 +7,71 @@
     <title>Weather Map of Svalbardposten's Digital News Archive</title>
     <!-- Linked (not JS-imported) so it's render-blocking and the overlay text
          never flashes at default sizes before styling loads. -->
-  <script type="module" crossorigin src="./assets/index-DIIsoHqY.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CtwcyTUt.css">
+  <script type="module" crossorigin src="./assets/index-DUmL6xzu.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-KUI9lZjw.css">
 </head>
 
 <body>
 
     <div id='title'>
-        <h1>Svalbardposten's Digital News Archive</h1>
-        <h2>An Instance of Rodighiero & Danielou's Weather Map <a href='https://github.com/TinaRosado/dataviz_svalbardposten_weathermap'>(GitHub Repo)</a></h2>
+        <p class='eyebrow'>Synoptic chart of news discourse</p>
+        <h1>Svalbard Weather Map</h1>
+        <p class='sub'>Svalbardposten · digital archive 2006–2024</p>
+        <p class='credit'>After Rodighiero &amp; Daniélou · <a href='https://github.com/TinaRosado/dataviz_svalbardposten_weathermap'>source</a></p>
     </div>
 
     <div id='legenda'>
-        <h1>Legend</h1>
-        <h3>This weather map visualizes discourse patterns from</h3>
-        <h3><a href='https://www.svalbardposten.no'>Svalbardposten</a>'s digital archive (2006-2024)</h3>
-        <br>
-        <h2>Polygons & Curves</h2>
-        <hr>
-        <h3><span class='red'>RED AREAS</span> stand for <span class='red'>EMERGING DISCOURSE</span></h3>
-        <h3><span class='blue'>BLUE AREAS</span> stand for <span class='blue'>RECEDING DISCOURSE</span></h3>
-        <h3><span class='gray'>GRAY ISOLINES</span> indicate high and low discourse activity</h3>
-        <h3><span class='gray'>GRAY CURVES</span> mark opposed areas</h3>
-        <br>
+        <p class='eyebrow'>Chart key</p>
+        <p class='lead'>Read the map as a weather chart: warm systems are discourse entering the debate, cool systems are discourse leaving it.</p>
 
-        <h2>Articles</h2>
-        <hr>
-        <h3>ZOOM IN to reveal clusters of articles by topic</h3>
-        <h3>CLICK on a date to access article's information</h3>
-        <h3><span class='red'>RED CROSSES</span> stand for <span class='red'>RECENT ARTICLES</span></h3>
-        <h3><span class='blue'>BLUE CROSSES</span> stand for <span class='blue'>PAST ARTICLES</span></h3>
+        <p class='section'>Pressure systems</p>
+        <div class='key-row'>
+            <span class='key-glyph'><span class='marker hi'>H</span></span>
+            <span><b class='hi'>High</b> — emerging discourse (warming)</span>
+        </div>
+        <div class='key-row'>
+            <span class='key-glyph'><span class='marker lo'>L</span></span>
+            <span><b class='lo'>Low</b> — receding discourse (cooling)</span>
+        </div>
 
+        <p class='section'>Isobars &amp; fronts</p>
+        <div class='key-row'>
+            <span class='key-glyph'>
+                <svg width='24' height='16' viewBox='0 0 24 16' fill='none' stroke='currentColor' stroke-width='1'>
+                    <path d='M2 8 Q12 -1 22 8' />
+                    <path d='M4.5 11 Q12 4 19.5 11' />
+                    <path d='M7 13.5 Q12 9 17 13.5' />
+                </svg>
+            </span>
+            <span><b>Isobars</b> — discourse activity, tight = intense</span>
+        </div>
+        <div class='key-row'>
+            <span class='key-glyph'>
+                <svg width='24' height='16' viewBox='0 0 24 16' fill='none' stroke='currentColor' stroke-width='1.3'>
+                    <path d='M2 13 Q9 1 15 8 T22 4' />
+                </svg>
+            </span>
+            <span><b>Fronts</b> — friction where systems meet</span>
+        </div>
+
+        <p class='section'>Stations · zoom in</p>
+        <div class='key-row'>
+            <span class='key-glyph hi'>
+                <svg width='12' height='12' fill='none' stroke='currentColor' stroke-width='1.6'><path d='M6 1V11M1 6H11' /></svg>
+            </span>
+            <span><b class='hi'>Recent</b> article</span>
+        </div>
+        <div class='key-row'>
+            <span class='key-glyph lo'>
+                <svg width='12' height='12' fill='none' stroke='currentColor' stroke-width='1.6'><path d='M6 1V11M1 6H11' /></svg>
+            </span>
+            <span><b class='lo'>Past</b> article</span>
+        </div>
+
+        <p class='key-note'>Zoom in to reveal article stations. Click a date to open the report.</p>
     </div>
 
-    <div id='loading'>Loading the archive…</div>
+    <div id='loading'>Warming up the chart…</div>
 
 
 </body>

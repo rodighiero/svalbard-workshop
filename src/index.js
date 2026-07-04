@@ -92,7 +92,6 @@ Promise.all([
         blue: 0x385da6,
         red: 0xa6242f,
         gray: 0x666666,
-        contours: 0xcccccc,
     }
 
     // App is already initialized (see Promise.all above)

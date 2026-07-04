@@ -3,8 +3,9 @@ import { contourDensity } from 'd3'
 
 const width = 0.5
 const cellSize = 1
-const bandwidth = 30 // Extension
-const thresholds = 15
+const bandwidth = 24 // Extension — smaller = crisper, more defined isolines
+const thresholds = 20 // Number of density levels (isoline count)
+const color = 0xb7c2cc // cool slate — matches the chrome's hairline rules
 
 export default (entities) => {
     const stage = new Graphics()
@@ -22,14 +23,20 @@ export default (entities) => {
         .bandwidth(bandwidth)
         .thresholds(thresholds)(entities)
 
+    // Each contour level is a MultiPolygon: an array of polygons, and each
+    // polygon is an array of rings — ring[0] the exterior, ring[1..] the holes
+    // (enclosed basins). Trace every ring so nested peaks and valleys are drawn,
+    // not just the outer silhouette.
     density.forEach((layer) => {
-        layer.coordinates.forEach((array) => {
-            array[0].forEach(([x, y], i) => {
-                if (i == 0) stage.moveTo(x, y)
-                stage.lineTo(x, y)
+        layer.coordinates.forEach((polygon) => {
+            polygon.forEach((ring) => {
+                ring.forEach(([x, y], i) => {
+                    if (i == 0) stage.moveTo(x, y)
+                    else stage.lineTo(x, y)
+                })
             })
         })
     })
 
-    stage.stroke({ width, color: s.contours })
+    stage.stroke({ width, color })
 }

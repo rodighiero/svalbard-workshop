@@ -99,12 +99,16 @@ const keepOneActive = (group) => {
     })
 }
 
+// Each sub-switch can carry its cluster's own High/Low colour on its toggle.
+const ACCENT = { 'clusters-red': 'accent-red', 'clusters-blue': 'accent-blue' }
+
 export default () => {
     const panel = document.createElement('div')
     panel.id = 'controls'
 
-    const heading = document.createElement('h1')
-    heading.textContent = 'Layers'
+    const heading = document.createElement('p')
+    heading.className = 'eyebrow'
+    heading.textContent = 'Chart layers'
     panel.appendChild(heading)
 
     LAYERS.forEach(({ label, name, children, atLeastOneChild }) => {
@@ -118,6 +122,7 @@ export default () => {
             const subLayer = findByLabel(s.viewport, sub.label)
             if (!subLayer) return
             const control = makeSwitch(subLayer, sub.name, true)
+            if (ACCENT[sub.label]) control.row.classList.add(ACCENT[sub.label])
             panel.appendChild(control.row)
             if (sub.mode) modeControl = control
             else group.push(control)
@@ -127,18 +132,41 @@ export default () => {
         if (modeControl) wireMode(modeControl, group)
     })
 
-    // Snapshot the initial camera now (before any user interaction) and jump
-    // back to it when the button is clicked. Reset directly (not via the
+    // View controls. Snapshot the initial camera now (before any user
+    // interaction) so Reset can jump back to it. Reset directly (not via the
     // animate plugin) since this app renders on demand rather than per-frame.
     const home = { scale: s.viewport.scale.x, x: s.viewport.center.x, y: s.viewport.center.y }
-    const reset = document.createElement('button')
-    reset.textContent = 'Reset view'
-    reset.addEventListener('click', () => {
-        s.viewport.setZoom(home.scale, true)
-        s.viewport.moveCenter(home.x, home.y)
+    const zoomBy = (factor) => {
+        s.viewport.setZoom(s.viewport.scale.x * factor, true) // clampZoom bounds it
         s.app.render()
-    })
-    panel.appendChild(reset)
+    }
+
+    const button = (text, className, aria, onClick) => {
+        const b = document.createElement('button')
+        b.textContent = text
+        b.className = className
+        if (aria) b.setAttribute('aria-label', aria)
+        b.addEventListener('click', onClick)
+        return b
+    }
+
+    const section = document.createElement('p')
+    section.className = 'section'
+    section.textContent = 'View'
+    panel.appendChild(section)
+
+    const row = document.createElement('div')
+    row.className = 'view-controls'
+    row.append(
+        button('–', 'zoom-btn', 'Zoom out', () => zoomBy(1 / 1.4)),
+        button('Reset', 'reset-btn', null, () => {
+            s.viewport.setZoom(home.scale, true)
+            s.viewport.moveCenter(home.x, home.y)
+            s.app.render()
+        }),
+        button('+', 'zoom-btn', 'Zoom in', () => zoomBy(1.4)),
+    )
+    panel.appendChild(row)
 
     document.body.appendChild(panel)
 }

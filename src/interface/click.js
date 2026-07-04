@@ -1,22 +1,27 @@
 import { select } from 'd3'
 
-const line = '—————————————'
-
+// The station report: clicking an article's date opens a met-bulletin style
+// readout — the year as a large instrument reading, the newspaper tags, then
+// the headline, standfirst, and a link out to the source.
 export function click(e) {
-    select('#focus').remove() // Delete previous focus
+    select('#focus').remove() // Replace any previous report
 
     const focus = select('body').append('div').attr('id', 'focus')
 
-    // Heading
+    focus.append('p').attr('class', 'eyebrow').text('Station report')
+    focus.append('div').attr('class', 'readout-year').text(e.year)
+    if (e.tags) focus.append('p').attr('class', 'readout-tags').text(e.tags)
 
-    focus.append('h2').html('Release Date: ' + e.year)
-    focus.append('h2').html('Newspaper Tag/s: ' + e.tags)
-    focus.append('p').html(line)
-    focus.append('h1').html(e.title)
-    focus.append('h2').html(e.subtitle)
+    focus.append('hr')
+
+    focus.append('h1').attr('class', 'readout-title').text(e.title)
+    if (e.subtitle) focus.append('p').attr('class', 'readout-sub').text(e.subtitle)
+
     focus
-        .append('h2')
-        .html(
-            `<a href=https://www.svalbardposten.no${e.published_url} target="_blank">Reference Link</a>`,
-        )
+        .append('a')
+        .attr('class', 'readout-link')
+        .attr('href', `https://www.svalbardposten.no${e.published_url}`)
+        .attr('target', '_blank')
+        .attr('rel', 'noopener')
+        .text('Read on svalbardposten.no ↗')
 }

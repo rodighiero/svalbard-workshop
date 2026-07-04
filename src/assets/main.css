@@ -1,23 +1,34 @@
 @import 'css-reset-and-normalize/css/reset-and-normalize.min.css';
 
 /******************************************************************************
-     * Basic elements
+ * Synoptic identity — the interface chrome is styled as a met-office chart
+ * bulletin: a cool glacial palette, monospaced instrument-readout labels,
+ * hairline rules, and the map's own High (red) / Low (blue) as the two accents.
 ******************************************************************************/
+
+:root {
+	--ink: #0b1d2a;        /* deep marine ink — Arctic night */
+	--muted: #5e6e7a;      /* cool slate for secondary text */
+	--rule: #c2ccd4;       /* hairline borders */
+	--hair: #d7dee3;       /* fainter inner dividers */
+	--panel: rgba(244, 247, 249, 0.9); /* frosted glacial white */
+	--field: #ffffff;
+	--high: #a6242f;       /* High / emerging discourse (matches the map) */
+	--low: #385da6;        /* Low / receding discourse (matches the map) */
+
+	--sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	--mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+}
 
 * {
 	-webkit-user-select: none;
-	-moz-user-select: -moz-none;
+	-moz-user-select: none;
 	user-select: none;
-	-khtml-user-select: none;
-	-o-user-select: none
-}
-
-* {
-	font-family: Arial, Helvetica, sans-serif;
 }
 
 body, html {
-	color: #000000;
+	color: var(--ink);
+	font-family: var(--sans);
 	overflow: hidden;
 	margin: 0;
 }
@@ -30,170 +41,326 @@ canvas {
 }
 
 a {
-	color: #000000;
-	text-decoration: underline;
+	color: var(--low);
+	text-decoration: none;
+	border-bottom: 1px solid rgba(56, 93, 166, 0.35);
+}
+
+a:hover {
+	border-bottom-color: var(--low);
 }
 
 /******************************************************************************
-	 * Containers
+ * Panels — one to each corner, like annotations around a synoptic chart.
 ******************************************************************************/
 
-#focus, #title, #legenda, #controls {
-	background-color: rgba(255, 255, 255, .8);
+#title, #controls, #legenda, #focus {
 	position: fixed;
-	border: none;
-	padding: 10px;
+	background: var(--panel);
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+	border: 1px solid var(--rule);
+	border-radius: 2px;
+	box-shadow: 0 1px 14px rgba(11, 29, 42, 0.08);
+	color: var(--ink);
+	padding: 13px 15px;
+	max-width: 280px;
 }
 
-/* Detail panel sits bottom-left so it clears the layer switches (top-left) */
-#focus {
-	left: 0;
-	bottom: 0;
-	width: 200px;
+#title   { top: 16px;    left: 16px; }     /* masthead */
+#controls{ top: 16px;    right: 16px; }    /* chart layers + view */
+#legenda { bottom: 16px; right: 16px; }    /* chart key */
+#focus   { bottom: 16px; left: 16px; width: 232px; } /* station report */
+
+/* Shared eyebrow + section labels — the instrument-readout voice. */
+.eyebrow {
+	font-family: var(--mono);
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	font-size: 9.5px;
+	color: var(--muted);
+	margin: 0 0 7px;
 }
 
-#controls {
-	left: 0;
-	top: 0;
+.section {
+	font-family: var(--mono);
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	font-size: 9.5px;
+	color: var(--muted);
+	margin: 13px 0 7px;
+	padding-bottom: 4px;
+	border-bottom: 1px solid var(--hair);
 }
 
-#focus p {
-	white-space: nowrap;
-	width: 180px;
-	overflow: hidden;
-	text-overflow: ellipsis;
+/******************************************************************************
+ * Masthead
+******************************************************************************/
+
+#title h1 {
+	font-size: 17px;
+	font-weight: 650;
+	letter-spacing: -0.01em;
+	line-height: 1.12;
+	margin: 0;
 }
 
-#title {
-	right: 0;
-	bottom: 10;
+#title .sub {
+	font-size: 11.5px;
+	color: var(--muted);
+	margin: 7px 0 0;
 }
 
-#legenda {
-	right: 0;
-	bottom: 0;
-	text-align: right;
+#title .credit {
+	font-size: 10px;
+	color: var(--muted);
+	margin: 9px 0 0;
 }
 
-/* Full-screen cover shown until the first map frame is drawn (removed in
-   index.js), so the reader never sees the empty canvas mid-load. */
-#loading {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
+/******************************************************************************
+ * Chart key (legend) — rows of a synoptic glyph beside its meaning.
+******************************************************************************/
+
+#legenda .lead {
+	font-size: 11px;
+	color: var(--muted);
+	line-height: 1.35;
+	margin: 0;
+}
+
+.key-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 6px 0;
+	font-size: 11.5px;
+	line-height: 1.25;
+}
+
+.key-glyph {
+	flex: none;
+	width: 24px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: #ffffff;
-	color: #999999;
-	font-size: 90%;
-	z-index: 10;
-	transition: opacity 0.6s ease;
+	color: var(--muted);
 }
 
-h1 {
-	font-size: 100%;
-	margin: 10px 0;
-	line-height: 18px;
-}
+.key-row b { font-weight: 600; }
 
-h2 {
-	font-size: 70%;
-	margin: 10px 0;
-	font-weight: normal;
-}
-
-h3 {
-	font-size: 60%;
-	margin: 5px 0;
-}
-
-p {
-	font-size: 45%;
-	margin: 5px 0;
+.marker {
+	font-family: var(--mono);
+	font-weight: 700;
+	font-size: 15px;
 	line-height: 1;
 }
 
-.red {
-	color: #A6242F;
-}
+.hi { color: var(--high); }
+.lo { color: var(--low); }
 
-.blue {
-	color: #385DA6;
-}
-
-.gray {
-	color: #999999;
+.key-note {
+	font-size: 10px;
+	color: var(--muted);
+	line-height: 1.4;
+	margin: 9px 0 0;
 }
 
 /******************************************************************************
-	 * Layer switches
+ * Station report (article detail, injected by click.js)
+******************************************************************************/
+
+.readout-year {
+	font-family: var(--mono);
+	font-size: 22px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1;
+	margin: 2px 0 4px;
+}
+
+.readout-tags {
+	font-family: var(--mono);
+	font-size: 9.5px;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	color: var(--muted);
+	margin: 0;
+	white-space: normal;
+	line-height: 1.35;
+}
+
+#focus hr {
+	border: none;
+	border-top: 1px solid var(--hair);
+	margin: 10px 0;
+}
+
+.readout-title {
+	font-size: 13px;
+	font-weight: 650;
+	line-height: 1.28;
+	margin: 0;
+}
+
+.readout-sub {
+	font-size: 11px;
+	color: var(--muted);
+	line-height: 1.32;
+	margin: 6px 0 0;
+}
+
+#focus .readout-link {
+	display: inline-block;
+	margin-top: 11px;
+	font-family: var(--mono);
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+}
+
+/******************************************************************************
+ * Layer switches
 ******************************************************************************/
 
 .switch {
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	margin: 4px 0;
+	gap: 8px;
+	margin: 6px 0;
 	cursor: pointer;
+	font-size: 11.5px;
 }
 
-.switch input {
-	display: none;
-}
+.switch.sub { margin-left: 14px; }
 
-.switch .slider {
+.switch input { display: none; }
+
+.slider {
 	position: relative;
 	flex: none;
-	width: 26px;
+	width: 24px;
 	height: 12px;
-	background-color: #cccccc;
+	background: #cdd6dd;
 	border-radius: 12px;
-	transition: background-color .2s;
+	transition: background 0.18s;
 }
 
-.switch .slider::before {
+.slider::before {
 	content: '';
 	position: absolute;
 	left: 2px;
 	top: 2px;
 	width: 8px;
 	height: 8px;
-	background-color: #ffffff;
+	background: #fff;
 	border-radius: 50%;
-	transition: transform .2s;
+	box-shadow: 0 1px 2px rgba(11, 29, 42, 0.25);
+	transition: transform 0.18s;
 }
 
-.switch input:checked + .slider {
-	background-color: #385DA6;
-}
+.switch input:checked + .slider { background: var(--low); }
+.switch input:checked + .slider::before { transform: translateX(12px); }
 
-.switch input:checked + .slider::before {
-	transform: translateX(14px);
-}
+/* Cluster subgroups carry their own High/Low colour when on. */
+.switch.accent-red input:checked + .slider { background: var(--high); }
+.switch.accent-blue input:checked + .slider { background: var(--low); }
 
-.switch.sub {
-	margin-left: 20px;
-}
+.switch-label { font-size: 11.5px; }
 
-.switch-label {
-	font-size: 60%;
+/******************************************************************************
+ * View controls (zoom / reset)
+******************************************************************************/
+
+.view-controls {
+	display: flex;
+	gap: 6px;
 }
 
 #controls button {
-	margin-top: 8px;
-	padding: 3px 8px;
-	font-family: inherit;
-	font-size: 60%;
-	color: #000000;
-	background-color: #ffffff;
-	border: 1px solid #cccccc;
-	border-radius: 3px;
+	font-family: var(--mono);
+	font-size: 10px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--ink);
+	background: var(--field);
+	border: 1px solid var(--rule);
+	border-radius: 2px;
+	padding: 6px 8px;
 	cursor: pointer;
+	transition: background 0.15s, border-color 0.15s;
 }
 
 #controls button:hover {
-	background-color: #f0f0f0;
+	background: #eef2f5;
+	border-color: var(--muted);
+}
+
+#controls .zoom-btn {
+	flex: none;
+	width: 28px;
+	padding: 6px 0;
+	font-size: 13px;
+	line-height: 1;
+}
+
+#controls .reset-btn { flex: 1; }
+
+/******************************************************************************
+ * Loading cover — an instrument warming up (removed in index.js).
+******************************************************************************/
+
+#loading {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #f5f7f9;
+	color: var(--muted);
+	font-family: var(--mono);
+	text-transform: uppercase;
+	letter-spacing: 0.18em;
+	font-size: 11px;
+	z-index: 10;
+	transition: opacity 0.6s ease;
+}
+
+/******************************************************************************
+ * Accessibility floor
+******************************************************************************/
+
+button:focus-visible, a:focus-visible {
+	outline: 2px solid var(--low);
+	outline-offset: 2px;
+}
+
+.switch input:focus-visible + .slider {
+	outline: 2px solid var(--low);
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	* { transition: none !important; }
+}
+
+/******************************************************************************
+ * Responsive — keep the four corners from colliding on small screens.
+******************************************************************************/
+
+@media (max-width: 720px) {
+	#title, #controls, #legenda, #focus {
+		max-width: 46vw;
+		padding: 10px 11px;
+	}
+	#focus { width: auto; max-width: 58vw; }
+	#title h1 { font-size: 14px; }
+	#title .sub, #title .credit { font-size: 10px; }
+	.readout-year { font-size: 18px; }
+	.key-row, .switch, .switch-label { font-size: 10.5px; }
+}
+
+/* On very narrow screens the key would crowd the map; the masthead's one-line
+   summary carries the essentials, so the full key steps aside. */
+@media (max-width: 460px) {
+	#legenda { display: none; }
 }
