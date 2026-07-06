@@ -70,7 +70,10 @@ a:hover {
 #title   { top: 16px;    left: 16px; }     /* masthead */
 #controls{ top: 16px;    right: 16px; }    /* chart layers + view */
 #legenda { bottom: 16px; right: 16px; max-width: 320px; }    /* chart key */
-#focus   { bottom: 16px; left: 16px; width: 232px; } /* station report */
+#focus   { bottom: 16px; left: 16px; width: 320px; } /* station report — matches legend width */
+
+/* Lead section header sits flush to the panel top, like the legend's eyebrow. */
+#focus .section:first-child { margin-top: 0; }
 
 /* Shared eyebrow + section labels — the instrument-readout voice. */
 .eyebrow {
@@ -208,15 +211,21 @@ a:hover {
 	margin: 2px 0 4px;
 }
 
-.readout-tags {
+/* Labelled term lines — "Tags: …" and "Keywords: …". */
+.readout-terms {
+	font-size: 10.5px;
+	color: var(--muted);
+	margin: 4px 0 0;
+	line-height: 1.38;
+}
+
+.readout-terms-label {
 	font-family: var(--mono);
-	font-size: 9.5px;
+	font-size: 9px;
 	text-transform: uppercase;
 	letter-spacing: 0.07em;
-	color: var(--muted);
-	margin: 0;
-	white-space: normal;
-	line-height: 1.35;
+	color: var(--ink, var(--muted));
+	font-weight: 600;
 }
 
 #focus hr {
@@ -232,12 +241,44 @@ a:hover {
 	margin: 0;
 }
 
+.readout-date {
+	font-family: var(--mono);
+	font-size: 10px;
+	letter-spacing: 0.04em;
+	color: var(--muted);
+	margin: 0 0 6px;
+}
+
 .readout-sub {
 	font-size: 11px;
 	color: var(--muted);
 	line-height: 1.32;
 	margin: 6px 0 0;
 }
+
+/* Instrument readings — a two-column label/value grid. */
+.readout-meta {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 3px 10px;
+	margin: 10px 0 0;
+	font-size: 10.5px;
+	line-height: 1.3;
+}
+
+.readout-meta dt {
+	font-family: var(--mono);
+	font-size: 9px;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	color: var(--muted);
+}
+
+.readout-meta dd {
+	margin: 0;
+	font-weight: 550;
+}
+
 
 #focus .readout-link {
 	display: inline-block;

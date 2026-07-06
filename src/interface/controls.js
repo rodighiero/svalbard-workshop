@@ -8,7 +8,14 @@ const LAYERS = [
     {
         label: 'elements',
         name: 'Articles',
-        children: [{ label: 'elements-years', name: 'Years' }],
+        // Per-cross labels are mutually exclusive — only one fits beside a
+        // cross, so activating one deactivates the rest.
+        exclusive: true,
+        children: [
+            { label: 'elements-years', name: 'Year' },
+            { label: 'elements-titles', name: 'Title' },
+            { label: 'elements-keywords', name: 'Keywords' },
+        ],
     },
     {
         label: 'clusters',
@@ -43,6 +50,8 @@ const makeSwitch = (layer, name, sub) => {
     input.type = 'checkbox'
     input.checked = layer.visible
     input.addEventListener('change', () => {
+        // Materialise the layer's content on first activation (lazy label build).
+        if (input.checked) layer.build?.()
         layer.visible = input.checked
     })
 
@@ -63,19 +72,38 @@ export default () => {
 
     const heading = document.createElement('p')
     heading.className = 'eyebrow'
-    heading.textContent = 'Chart layers'
+    heading.textContent = 'Layers'
     panel.appendChild(heading)
 
-    LAYERS.forEach(({ label, name, children }) => {
+    LAYERS.forEach(({ label, name, children, exclusive }) => {
         const layer = findByLabel(s.viewport, label)
         if (!layer) return
         panel.appendChild(makeSwitch(layer, name, false).row)
 
+        const subs = []
         children?.forEach((sub) => {
             const subLayer = findByLabel(s.viewport, sub.label)
             if (!subLayer) return
-            panel.appendChild(makeSwitch(subLayer, sub.name, true).row)
+            const sw = makeSwitch(subLayer, sub.name, true)
+            panel.appendChild(sw.row)
+            subs.push(sw)
         })
+
+        // Exclusive group: turning one sub-switch on turns the siblings off
+        // (their layers hide directly, since setting .checked doesn't fire a
+        // change event). Turning the active one off again is still allowed.
+        if (exclusive) {
+            subs.forEach((sw) => {
+                sw.input.addEventListener('change', () => {
+                    if (!sw.input.checked) return
+                    subs.forEach((other) => {
+                        if (other === sw) return
+                        other.input.checked = false
+                        other.layer.visible = false
+                    })
+                })
+            })
+        }
     })
 
     // View controls. Snapshot the initial camera now (before any user
