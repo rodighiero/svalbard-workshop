@@ -69,7 +69,7 @@ a:hover {
 
 #title   { top: 16px;    left: 16px; }     /* masthead */
 #controls{ top: 16px;    right: 16px; }    /* chart layers + view */
-#legenda { bottom: 16px; right: 16px; }    /* chart key */
+#legenda { bottom: 16px; right: 16px; max-width: 320px; }    /* chart key */
 #focus   { bottom: 16px; left: 16px; width: 232px; } /* station report */
 
 /* Shared eyebrow + section labels — the instrument-readout voice. */
@@ -121,6 +121,12 @@ a:hover {
  * Chart key (legend) — rows of a synoptic glyph beside its meaning.
 ******************************************************************************/
 
+#legenda .key-rule {
+	border: 0;
+	border-top: 1px solid var(--rule);
+	margin: 0 0 9px;
+}
+
 #legenda .lead {
 	font-size: 11px;
 	color: var(--muted);
@@ -156,6 +162,37 @@ a:hover {
 	color: var(--muted);
 	line-height: 1.4;
 	margin: 9px 0 0;
+}
+
+/* Temperature spectrum — the per-station blue→red year gradient, matching
+   the pipeline's (1-n, 0, n) RGB ramp (blue → purple → red, green = 0). */
+.key-spectrum { margin: 8px 0 2px; }
+
+.spectrum-crosses {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	align-items: center;
+	justify-items: center;
+	margin-bottom: 3px;
+}
+
+.spectrum-cross { flex: none; }
+
+.spectrum-bar {
+	display: block;
+	height: 8px;
+	border-radius: 2px;
+	background: linear-gradient(to right, #0000ff, #800080, #ff0000);
+}
+
+.spectrum-scale {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	justify-items: center;
+	font-family: var(--mono);
+	font-size: 9px;
+	color: var(--muted);
+	margin-top: 3px;
 }
 
 /******************************************************************************
