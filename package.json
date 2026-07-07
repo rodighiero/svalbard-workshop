@@ -32,7 +32,9 @@
         "css-reset-and-normalize": "^2.3.5",
         "culori": "^2.0.3",
         "d3": "^7.2.1",
+        "jspdf": "^4.2.1",
         "pixi-viewport": "^6.0.3",
-        "pixi.js": "^8.19.0"
+        "pixi.js": "^8.19.0",
+        "svg2pdf.js": "^2.7.0"
     }
 }

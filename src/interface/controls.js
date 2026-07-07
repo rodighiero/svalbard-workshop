@@ -2,7 +2,9 @@
 // layer by flipping its `.visible`. Call after all layers are rendered so they
 // can be located by their `.label`. Some layers expose nested sub-switches
 // (Clusters splits into independently toggleable Fills, Labels, and Fronts).
-// The panel also holds zoom and "Reset view" controls.
+// The panel also holds zoom, "Reset view", and A0 print-export controls.
+
+import download from './download.js'
 
 const LAYERS = [
     {
@@ -141,6 +143,31 @@ export default () => {
         button('+', 'zoom-btn', 'Zoom in', () => zoomBy(1.4)),
     )
     panel.appendChild(row)
+
+    // Export — rasterises the current view into a high-resolution A0-landscape
+    // PDF for printing. It runs on the GPU and can take a second, so the button
+    // shows progress and re-enables itself when done (or on failure).
+    const exportSection = document.createElement('p')
+    exportSection.className = 'section'
+    exportSection.textContent = 'Export'
+    panel.appendChild(exportSection)
+
+    const dl = button('Download A0 PDF', 'download-btn', null, async () => {
+        const original = dl.textContent
+        dl.disabled = true
+        dl.textContent = 'Preparing…'
+        try {
+            await download()
+            dl.textContent = original
+        } catch (err) {
+            console.error('A0 PDF export failed', err)
+            dl.textContent = 'Export failed'
+            setTimeout(() => (dl.textContent = original), 2500)
+        } finally {
+            dl.disabled = false
+        }
+    })
+    panel.appendChild(dl)
 
     document.body.appendChild(panel)
 }

@@ -26,6 +26,7 @@ export default (entities) => {
     })
 
     // Nudge labels apart before they're drawn. The generous padding keeps a gap
-    // between neighbours so the fronts running between clusters have room.
-    deconflictLabels(labelList, { padding: 4 })
+    // between neighbours so the fronts running between clusters have room; the
+    // extra iterations let the (now larger) labels fully settle to no overlap.
+    deconflictLabels(labelList, { padding: 4, iterations: 200 })
 }

@@ -372,6 +372,9 @@ a:hover {
 
 #controls .reset-btn { flex: 1; }
 
+#controls .download-btn { width: 100%; margin-top: 6px; }
+#controls .download-btn:disabled { cursor: default; opacity: 0.6; }
+
 /******************************************************************************
  * Loading cover — an instrument warming up (removed in index.js).
 ******************************************************************************/
